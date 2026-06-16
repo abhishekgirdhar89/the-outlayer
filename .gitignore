@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# visual-audit generated artifacts (keep the scripts, not the output)
+/visual-audit/screenshots/
+/visual-audit/report.html
+/visual-audit/results.json
