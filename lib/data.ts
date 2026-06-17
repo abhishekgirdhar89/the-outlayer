@@ -1,5 +1,6 @@
 import { getPublicClient } from "./supabase";
-import type { Project, Post, Service, Testimonial, Homepage, Client, SiteSettings, NavItem } from "./types";
+import type { Project, Post, Service, Testimonial, Homepage, Client, SiteSettings, NavItem, PageSeo } from "./types";
+import type { Metadata } from "next";
 
 export const SITE_DEFAULTS: SiteSettings = {
   id: 1,
@@ -146,6 +147,45 @@ export async function getTestimonials(): Promise<Testimonial[]> {
     console.error("getTestimonials failed:", e);
     return [];
   }
+}
+
+export async function getPageSeo(slug: string): Promise<PageSeo | null> {
+  try {
+    const supabase = getPublicClient();
+    const { data, error } = await supabase.from("page_seo").select("*").eq("slug", slug).maybeSingle();
+    if (error) throw error;
+    return data ?? null;
+  } catch (e) {
+    console.error("getPageSeo failed:", e);
+    return null;
+  }
+}
+
+/** Build a Next Metadata object from SEO fields, with fallbacks. */
+export function buildMetadata(opts: {
+  title?: string | null;
+  description?: string | null;
+  keywords?: string | null;
+  fallbackTitle: string;
+  fallbackDescription: string;
+  image?: string | null;
+}): Metadata {
+  const title = (opts.title || "").trim() || opts.fallbackTitle;
+  const description = (opts.description || "").trim() || opts.fallbackDescription;
+  const keywords = (opts.keywords || "")
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
+  return {
+    title,
+    description,
+    keywords: keywords.length ? keywords : undefined,
+    openGraph: {
+      title,
+      description,
+      images: opts.image ? [opts.image] : undefined,
+    },
+  };
 }
 
 export async function getClients(): Promise<Client[]> {

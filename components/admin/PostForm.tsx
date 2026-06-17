@@ -100,6 +100,27 @@ export function PostForm({ post }: { post?: Post }) {
         </div>
       </div>
 
+      <div style={{ borderTop: "1px solid var(--bd)", margin: "8px 0 20px", paddingTop: 20 }}>
+        <h3 className="sec-title" style={{ border: 0, paddingBottom: 0, marginBottom: 16 }}>
+          SEO / meta
+        </h3>
+        <div className="fld">
+          <label htmlFor="meta_title">Meta title</label>
+          <input id="meta_title" name="meta_title" defaultValue={post?.meta_title ?? ""} placeholder="Defaults to the post title" />
+          <span className="hint">Shown in browser tabs &amp; search results. ~50–60 chars. Leave blank to use the title.</span>
+        </div>
+        <div className="fld">
+          <label htmlFor="meta_description">Meta description</label>
+          <textarea id="meta_description" name="meta_description" defaultValue={post?.meta_description ?? ""} rows={2} placeholder="Defaults to the excerpt" />
+          <span className="hint">~150–160 chars. Leave blank to use the excerpt.</span>
+        </div>
+        <div className="fld">
+          <label htmlFor="meta_keywords">Meta keywords</label>
+          <input id="meta_keywords" name="meta_keywords" defaultValue={post?.meta_keywords ?? ""} placeholder="strategy, positioning, go-to-market" />
+          <span className="hint">Comma-separated. Optional.</span>
+        </div>
+      </div>
+
       <div className="admin-actions">
         <button className="btn btn-primary" type="submit">
           {post ? "Save changes" : "Create post"}

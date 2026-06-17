@@ -6,15 +6,21 @@ import { SubscribeForm } from "@/components/SubscribeForm";
 import { InsightsList } from "@/components/InsightsList";
 import { MobileCtaBar } from "@/components/MobileCtaBar";
 import { Reveals } from "@/components/Reveals";
-import { getPublishedPosts } from "@/lib/data";
+import { getPublishedPosts, getPageSeo, buildMetadata } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "Insights — The Outlayer",
-  description:
-    "Strategy, operations, growth, and AI — for people who build. Short reads on the move beneath the obvious.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getPageSeo("insights");
+  return buildMetadata({
+    title: seo?.meta_title,
+    description: seo?.meta_description,
+    keywords: seo?.meta_keywords,
+    fallbackTitle: "Insights — The Outlayer",
+    fallbackDescription:
+      "Strategy, operations, growth, and AI — for people who build. Short reads on the move beneath the obvious.",
+  });
+}
 
 export default async function InsightsPage() {
   const posts = await getPublishedPosts();

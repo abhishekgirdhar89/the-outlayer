@@ -7,7 +7,7 @@ import { Media } from "@/components/Media";
 import { MobileCtaBar } from "@/components/MobileCtaBar";
 import { ShareButtons } from "@/components/ShareButtons";
 import { Reveals } from "@/components/Reveals";
-import { getPostBySlug, getPublishedPosts } from "@/lib/data";
+import { getPostBySlug, getPublishedPosts, buildMetadata } from "@/lib/data";
 import { buildToc, formatMonthYear, injectLeadFigure } from "@/lib/utils";
 import type { Post } from "@/lib/types";
 
@@ -19,16 +19,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return { title: "Not found — The Outlayer" };
-  return {
-    title: `${post.title} — The Outlayer`,
-    description: post.excerpt,
-    openGraph: {
-      type: "article",
-      title: post.title,
-      description: post.excerpt,
-      images: post.cover_image_url ? [post.cover_image_url] : undefined,
-    },
-  };
+  const meta = buildMetadata({
+    title: post.meta_title,
+    description: post.meta_description,
+    keywords: post.meta_keywords,
+    fallbackTitle: `${post.title} — The Outlayer`,
+    fallbackDescription: post.excerpt,
+    image: post.cover_image_url,
+  });
+  if (meta.openGraph) (meta.openGraph as { type?: string }).type = "article";
+  return meta;
 }
 
 export default async function PostPage({ params }: Props) {

@@ -25,6 +25,16 @@ export type Post = {
   featured: boolean;
   published_at: string | null;
   created_at: string;
+  meta_title: string;
+  meta_description: string;
+  meta_keywords: string;
+};
+
+export type PageSeo = {
+  slug: string;
+  meta_title: string;
+  meta_description: string;
+  meta_keywords: string;
 };
 
 export type Service = {

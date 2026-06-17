@@ -233,3 +233,26 @@ create policy "public read nav_items" on public.nav_items for select using (true
 insert into public.nav_items (label, href, sort_order) values
   ('About','/#about',1),('Practice','/#services',2),('Work','/#work',3),('Insights','/insights',4)
 on conflict do nothing;
+
+-- =============================================================
+-- v4 ADDITIONS — SEO / meta (per-page title, description, keywords)
+-- =============================================================
+-- page-level SEO (home, insights, …); posts carry their own below
+create table if not exists public.page_seo (slug text primary key);
+alter table public.page_seo add column if not exists meta_title       text default '';
+alter table public.page_seo add column if not exists meta_description  text default '';
+alter table public.page_seo add column if not exists meta_keywords     text default '';
+
+alter table public.page_seo enable row level security;
+drop policy if exists "public read page_seo" on public.page_seo;
+create policy "public read page_seo" on public.page_seo for select using (true);
+
+insert into public.page_seo (slug, meta_title, meta_description, meta_keywords) values
+  ('home','The Outlayer — Strategy that gets built · Abhishek Girdhar','The independent practice of Abhishek Girdhar — strategy, operations and technology for founders and operators. The non-obvious move, built.','strategy, operations, marketing, AI automation, go-to-market, Abhishek Girdhar'),
+  ('insights','Insights — The Outlayer','Strategy, operations, growth, and AI — short reads on the move beneath the obvious, for people who build.','strategy, operations, growth, AI, marketing, insights')
+on conflict (slug) do nothing;
+
+-- per-post SEO overrides (fall back to title/excerpt when empty)
+alter table public.posts add column if not exists meta_title       text default '';
+alter table public.posts add column if not exists meta_description  text default '';
+alter table public.posts add column if not exists meta_keywords     text default '';

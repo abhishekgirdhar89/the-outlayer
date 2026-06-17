@@ -15,10 +15,24 @@ import {
   getTestimonials,
   getPublishedPosts,
   getClients,
+  getPageSeo,
+  buildMetadata,
 } from "@/lib/data";
 import { formatYear, makeCaptcha } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const seo = await getPageSeo("home");
+  return buildMetadata({
+    title: seo?.meta_title,
+    description: seo?.meta_description,
+    keywords: seo?.meta_keywords,
+    fallbackTitle: "The Outlayer — Strategy that gets built · Abhishek Girdhar",
+    fallbackDescription:
+      "The independent practice of Abhishek Girdhar — strategy, operations and technology for founders and operators.",
+  });
+}
 
 const FALLBACK_CLIENTS = ["Maruti Suzuki", "LPU", "Mu Sigma", "DishTV", "Fab India", "Lingo Sailor"];
 

@@ -73,6 +73,9 @@ export async function savePost(formData: FormData) {
     published: bool(formData, "published"),
     featured: bool(formData, "featured"),
     published_at: publishedAt ? new Date(publishedAt).toISOString() : new Date().toISOString(),
+    meta_title: str(formData, "meta_title"),
+    meta_description: str(formData, "meta_description"),
+    meta_keywords: str(formData, "meta_keywords"),
   };
   const supabase = getAdminClient();
   const { error } = id
@@ -318,4 +321,20 @@ export async function deleteNavItem(formData: FormData) {
   fail(error);
   revalidatePath("/", "layout");
   redirect("/admin/header-footer");
+}
+
+// ============================ PAGE SEO ============================
+export async function savePageSeo(formData: FormData) {
+  const payload = {
+    slug: str(formData, "slug"),
+    meta_title: str(formData, "meta_title"),
+    meta_description: str(formData, "meta_description"),
+    meta_keywords: str(formData, "meta_keywords"),
+  };
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("page_seo").upsert(payload, { onConflict: "slug" });
+  fail(error);
+  refreshPublic();
+  revalidatePath("/admin/seo");
+  redirect("/admin/seo?saved=1");
 }

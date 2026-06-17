@@ -12,6 +12,7 @@ import type {
   Subscriber,
   SiteSettings,
   NavItem,
+  PageSeo,
 } from "./types";
 
 export async function adminListProjects(): Promise<Project[]> {
@@ -102,4 +103,26 @@ export async function adminListNavItems(): Promise<NavItem[]> {
   const { data, error } = await s.from("nav_items").select("*").order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   return data ?? [];
+}
+
+/** Page SEO rows, always returning home + insights (merged with any DB values). */
+export async function adminListPageSeo(): Promise<(PageSeo & { label: string })[]> {
+  const s = getAdminClient();
+  const { data, error } = await s.from("page_seo").select("*");
+  if (error) throw new Error(error.message);
+  const bySlug = new Map((data ?? []).map((r) => [r.slug, r]));
+  const pages: { slug: string; label: string }[] = [
+    { slug: "home", label: "Homepage" },
+    { slug: "insights", label: "Insights listing" },
+  ];
+  return pages.map((p) => {
+    const row = bySlug.get(p.slug);
+    return {
+      slug: p.slug,
+      label: p.label,
+      meta_title: row?.meta_title ?? "",
+      meta_description: row?.meta_description ?? "",
+      meta_keywords: row?.meta_keywords ?? "",
+    };
+  });
 }
