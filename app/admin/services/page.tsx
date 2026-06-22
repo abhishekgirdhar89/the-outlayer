@@ -29,9 +29,15 @@ function ServiceFields({ s }: { s?: Service }) {
         <label>Description</label>
         <textarea name="description" defaultValue={s?.description ?? ""} rows={2} />
       </div>
-      <div className="fld">
-        <label>Link (optional)</label>
-        <input name="link" defaultValue={s?.link ?? ""} placeholder="/services/brand-gtm" />
+      <div className="fld-row">
+        <div className="fld">
+          <label>Link (optional)</label>
+          <input name="link" defaultValue={s?.link ?? ""} placeholder="/services/brand-gtm" />
+        </div>
+        <div className="fld">
+          <label>CTA label</label>
+          <input name="cta_label" defaultValue={s?.cta_label ?? "Know more"} placeholder="Know more" />
+        </div>
       </div>
       <ImageField
         name="image_url"

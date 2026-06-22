@@ -53,12 +53,17 @@ export const HOMEPAGE_DEFAULTS: Homepage = {
   hero_position: "Strategy that gets *built.*",
   hero_subtitle:
     "The independent practice of Abhishek Girdhar — strategy, operations and technology, as one motion, for founders and operators.",
+  hero_cta1_label: "I need help",
+  hero_cta1_href: "#enquiry",
+  hero_cta2_label: "See the work",
+  hero_cta2_href: "#work",
   about_kicker: "About Abhishek",
   about_heading: "An operator who *thinks and builds.*",
   about_subheading:
     "Fourteen years inside agencies — in *every seat* from sales to running the whole operation.",
   about_body:
     "The rare advisor who draws the plan and ships the system that makes it real — across marketing, operations, and technology. The background is the proof, not the pitch.",
+  about_employers: "Accenture, Google, AdGlobal360, NP Digital",
   about_photo_url: "",
   stat1_value: "14", stat1_unit: "yrs", stat1_label: "Operating across agencies — strategy to delivery.",
   stat2_value: "$5", stat2_unit: "M+", stat2_label: "Operations scaled, with the P&L owned.",
@@ -79,6 +84,14 @@ export const HOMEPAGE_DEFAULTS: Homepage = {
   enquiry_heading: "Let's find the *non-obvious move.*",
   enquiry_body:
     "Tell me where you're headed in one line. We'll take it from there over a short working session.",
+  ack_eyebrow: "Received",
+  ack_heading: "Got it, {name} — thank you.",
+  ack_body:
+    "Your note is in, and your details are saved. The next step is a short working session — pick a time that suits you.",
+  ack_echo_label: "What you sent",
+  ack_cta_label: "Pick a time on Calendly",
+  ack_cta_href: "",
+  ack_contact_email: "hello@theoutlayer.com",
   show_hero: true,
   show_about: true,
   show_services: true,

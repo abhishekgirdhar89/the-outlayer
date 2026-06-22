@@ -66,6 +66,26 @@ export default async function HomepageAdmin({
             <CountField name="hero_position" label="Position line" defaultValue={h.hero_position} guide={26} hint={accentHint} />
           </div>
           <CountField name="hero_subtitle" label="Subtitle" defaultValue={h.hero_subtitle} rows={2} guide={140} />
+          <div className="fld-row">
+            <div className="fld">
+              <label>Primary button label</label>
+              <input name="hero_cta1_label" defaultValue={h.hero_cta1_label} placeholder="(leave empty to hide)" />
+            </div>
+            <div className="fld">
+              <label>Primary button link</label>
+              <input name="hero_cta1_href" defaultValue={h.hero_cta1_href} placeholder="#enquiry" />
+            </div>
+          </div>
+          <div className="fld-row">
+            <div className="fld">
+              <label>Secondary button label</label>
+              <input name="hero_cta2_label" defaultValue={h.hero_cta2_label} placeholder="(leave empty to hide)" />
+            </div>
+            <div className="fld">
+              <label>Secondary button link</label>
+              <input name="hero_cta2_href" defaultValue={h.hero_cta2_href} placeholder="#work" />
+            </div>
+          </div>
           <ImageField
             name="hero_image_url"
             label="Hero graphic (optional)"
@@ -87,6 +107,13 @@ export default async function HomepageAdmin({
           <CountField name="about_heading" label="Heading" defaultValue={h.about_heading} guide={36} hint={accentHint} />
           <CountField name="about_subheading" label="Subheading" defaultValue={h.about_subheading} rows={2} guide={110} hint={accentHint} />
           <CountField name="about_body" label="Body" defaultValue={h.about_body} rows={3} guide={200} />
+          <CountField
+            name="about_employers"
+            label="Employers"
+            defaultValue={h.about_employers}
+            rows={2}
+            hint="Companies that employed you — separate names with commas or new lines. Shown as the static “Employers” row. The scrolling “Built alongside” row is managed under Clients."
+          />
         </div>
 
         {/* STATS */}
@@ -127,6 +154,35 @@ export default async function HomepageAdmin({
           <CountField name="enquiry_eyebrow" label="Eyebrow" defaultValue={h.enquiry_eyebrow} guide={14} />
           <CountField name="enquiry_heading" label="Heading" defaultValue={h.enquiry_heading} guide={34} hint={accentHint} />
           <CountField name="enquiry_body" label="Body" defaultValue={h.enquiry_body} rows={2} guide={110} />
+        </div>
+
+        {/* ENQUIRY ACKNOWLEDGEMENT */}
+        <div className="admin-card">
+          <h3 className="sec-title">Enquiry — acknowledgement screen</h3>
+          <p className="hint" style={{ marginBottom: 16 }}>
+            Shown after someone submits the contact form. Use <code>{"{name}"}</code> in the heading
+            to greet them by first name.
+          </p>
+          <div className="fld-row">
+            <CountField name="ack_eyebrow" label="Eyebrow" defaultValue={h.ack_eyebrow} guide={12} />
+            <CountField name="ack_heading" label="Heading" defaultValue={h.ack_heading} guide={34} hint="e.g. “Got it, {name} — thank you.”" />
+          </div>
+          <CountField name="ack_body" label="Body" defaultValue={h.ack_body} rows={2} guide={140} />
+          <CountField name="ack_echo_label" label="“What you sent” label" defaultValue={h.ack_echo_label} guide={20} hint="Heading above the echo of their message. Leave empty to hide the echo box." />
+          <div className="fld-row">
+            <div className="fld">
+              <label>Booking button label</label>
+              <input name="ack_cta_label" defaultValue={h.ack_cta_label} placeholder="Pick a time on Calendly" />
+            </div>
+            <div className="fld">
+              <label>Booking link (Calendly etc.)</label>
+              <input name="ack_cta_href" defaultValue={h.ack_cta_href} placeholder="https://calendly.com/… (empty to hide button)" />
+            </div>
+          </div>
+          <div className="fld">
+            <label>Fallback contact email</label>
+            <input name="ack_contact_email" defaultValue={h.ack_contact_email} placeholder="hello@theoutlayer.com (empty to hide)" />
+          </div>
         </div>
 
         {/* SUBSCRIBE */}

@@ -47,6 +47,10 @@ export default async function HomePage() {
   ]);
 
   const clientNames = clientRows.length ? clientRows.map((c) => c.name) : FALLBACK_CLIENTS;
+  const employers = home.about_employers
+    .split(/[\n,]+/)
+    .map((e) => e.trim())
+    .filter(Boolean);
 
   // Captcha numbers generated per request (page is dynamic).
   const { a: capA, b: capB } = makeCaptcha();
@@ -92,12 +96,16 @@ export default async function HomePage() {
             </p>
             <p className="sub">{home.hero_subtitle}</p>
             <div className="hero-cta">
-              <a className="btn btn-primary" href="#enquiry">
-                I need help <span className="arr">→</span>
-              </a>
-              <a className="btn btn-ghost-dk" href="#work">
-                See the work
-              </a>
+              {home.hero_cta1_label && (
+                <a className="btn btn-primary" href={home.hero_cta1_href || "#enquiry"}>
+                  {home.hero_cta1_label} <span className="arr">→</span>
+                </a>
+              )}
+              {home.hero_cta2_label && (
+                <a className="btn btn-ghost-dk" href={home.hero_cta2_href || "#work"}>
+                  {home.hero_cta2_label}
+                </a>
+              )}
             </div>
           </div>
           <div className="hero-figure" aria-hidden="true">
@@ -156,7 +164,13 @@ export default async function HomePage() {
                 <h3>
                   <Accent text={home.about_subheading} />
                 </h3>
-                <p>{home.about_body}</p>
+                {home.about_body
+                  .split(/\n+/)
+                  .map((para) => para.trim())
+                  .filter(Boolean)
+                  .map((para, i) => (
+                    <p key={i}>{para}</p>
+                  ))}
               </div>
             </div>
             <div className="about-stats">
@@ -172,18 +186,34 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {home.show_clients && (
-            <div className="brand-strip reveal">
-              <span className="lab">Built alongside</span>
-              <div className="brand-marquee">
-                <div className="brand-track">
-                  {[...clientNames, ...clientNames].map((b, i) => (
-                    <span className="bn" key={i}>
-                      {b}
-                    </span>
-                  ))}
+          {(employers.length > 0 || home.show_clients) && (
+            <div className="cred-rows reveal">
+              {employers.length > 0 && (
+                <div className="cred-strip">
+                  <span className="lab">Employers</span>
+                  <div className="emp-row">
+                    {employers.map((e, i) => (
+                      <span className="en" key={i}>
+                        {e}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+              {home.show_clients && (
+                <div className="cred-strip">
+                  <span className="lab">Built alongside</span>
+                  <div className="brand-marquee">
+                    <div className="brand-track">
+                      {[...clientNames, ...clientNames].map((b, i) => (
+                        <span className="bn" key={i}>
+                          {b}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -219,7 +249,7 @@ export default async function HomePage() {
                   </div>
                   <p>{s.description}</p>
                   <span className="more">
-                    Know more <span className="arr">→</span>
+                    {s.cta_label || "Know more"} <span className="arr">→</span>
                   </span>
                 </>
               );
@@ -306,7 +336,12 @@ export default async function HomePage() {
                   <div className="qm">&ldquo;</div>
                   <p>{q.quote}</p>
                   <figcaption className="by">
-                    <span className="av" />
+                    {q.image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img className="av" src={q.image_url} alt={q.name} />
+                    ) : (
+                      <span className="av" />
+                    )}
                     <div>
                       <div className="nm">{q.name}</div>
                       <div className="rl">{q.role}</div>
@@ -380,7 +415,20 @@ export default async function HomePage() {
               </h2>
               <p className="lead2">{home.enquiry_body}</p>
             </div>
-            <EnquiryForm source="Homepage" capA={capA} capB={capB} />
+            <EnquiryForm
+              source="Homepage"
+              capA={capA}
+              capB={capB}
+              ack={{
+                eyebrow: home.ack_eyebrow,
+                heading: home.ack_heading,
+                body: home.ack_body,
+                echoLabel: home.ack_echo_label,
+                ctaLabel: home.ack_cta_label,
+                ctaHref: home.ack_cta_href,
+                contactEmail: home.ack_contact_email,
+              }}
+            />
           </div>
         </div>
       </section>
@@ -402,14 +450,14 @@ export default async function HomePage() {
 }
 
 const FALLBACK_SERVICES = [
-  { id: "f1", number: "01", title: "Brand & GTM", description: "Positioning and a go-to-market the whole company can actually run.", link: "" },
-  { id: "f2", number: "02", title: "Growth Marketing", description: "The few channels and moves that actually move the number.", link: "" },
-  { id: "f3", number: "03", title: "AI Automation", description: "Practical AI systems that take real, repeatable work off the team.", link: "" },
-  { id: "f4", number: "04", title: "Marketing Ops", description: "The operating system that lets marketing scale cleanly as you grow.", link: "" },
+  { id: "f1", number: "01", title: "Brand & GTM", description: "Positioning and a go-to-market the whole company can actually run.", link: "", cta_label: "Know more" },
+  { id: "f2", number: "02", title: "Growth Marketing", description: "The few channels and moves that actually move the number.", link: "", cta_label: "Know more" },
+  { id: "f3", number: "03", title: "AI Automation", description: "Practical AI systems that take real, repeatable work off the team.", link: "", cta_label: "Know more" },
+  { id: "f4", number: "04", title: "Marketing Ops", description: "The operating system that lets marketing scale cleanly as you grow.", link: "", cta_label: "Know more" },
 ];
 
 const FALLBACK_TESTIMONIALS = [
-  { id: "t1", quote: "He found the lever the rest of us walked past for a year — then built the thing that pulled it.", name: "Placeholder Name", role: "Founder · SaaS" },
-  { id: "t2", quote: "Strategy that didn't stay on a slide. We had the system running inside two weeks.", name: "Placeholder Name", role: "COO · Agency" },
-  { id: "t3", quote: "The rare operator who can hold the whole picture and still ship the detail himself.", name: "Placeholder Name", role: "VP Growth · DTC" },
+  { id: "t1", quote: "He found the lever the rest of us walked past for a year — then built the thing that pulled it.", name: "Placeholder Name", role: "Founder · SaaS", image_url: "" },
+  { id: "t2", quote: "Strategy that didn't stay on a slide. We had the system running inside two weeks.", name: "Placeholder Name", role: "COO · Agency", image_url: "" },
+  { id: "t3", quote: "The rare operator who can hold the whole picture and still ship the detail himself.", name: "Placeholder Name", role: "VP Growth · DTC", image_url: "" },
 ];

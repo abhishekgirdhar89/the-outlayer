@@ -5,34 +5,58 @@ import { submitEnquiry, type FormState } from "@/app/form-actions";
 
 const initial: FormState = { ok: false };
 
+export type AckCopy = {
+  eyebrow: string;
+  heading: string;
+  body: string;
+  echoLabel: string;
+  ctaLabel: string;
+  ctaHref: string;
+  contactEmail: string;
+};
+
+/** Replace {name} in the heading template with the sender's first name (or drop it cleanly). */
+function personalise(template: string, name?: string): string {
+  const first = (name ?? "").trim().split(/\s+/)[0] ?? "";
+  if (!template.includes("{name}")) return template;
+  return first ? template.replace(/\{name\}/g, first) : template.replace(/,?\s*\{name\}/g, "");
+}
+
 export function EnquiryForm({
   source = "Homepage",
   capA,
   capB,
+  ack,
 }: {
   source?: string;
   capA: number;
   capB: number;
+  ack: AckCopy;
 }) {
   const [state, action, pending] = useActionState(submitEnquiry, initial);
   const a = capA;
   const b = capB;
   const fe = state.fieldErrors ?? {};
+  const lead = state.lead;
 
-  if (state.ok) {
-    return (
-      <div className="form reveal" data-d="1">
-        <div className="form-done">
-          <div className="tick">✓</div>
-          <h3>Got it — thank you.</h3>
-          <p>Your enquiry is in. I&apos;ll be in touch shortly to find a time.</p>
-        </div>
-      </div>
-    );
-  }
+  // Booking link, with the sender's details pre-filled (Calendly-style query params).
+  const bookingHref =
+    ack.ctaHref && lead
+      ? `${ack.ctaHref}${ack.ctaHref.includes("?") ? "&" : "?"}name=${encodeURIComponent(
+          lead.name
+        )}&email=${encodeURIComponent(lead.email)}`
+      : ack.ctaHref;
 
+  // Keep ONE persistent form node and toggle .sent — so the acknowledgement is never a
+  // freshly-mounted .reveal element (which the scroll observer would leave invisible).
+  // Force `in` on success so the form stays visible even as React rewrites className.
   return (
-    <form className="form reveal" data-d="1" action={action} noValidate>
+    <form
+      className={`form reveal${state.ok ? " in sent" : ""}`}
+      data-d="1"
+      action={action}
+      noValidate
+    >
       <input type="hidden" name="source" value={source} />
       {/* honeypot */}
       <input
@@ -79,6 +103,33 @@ export function EnquiryForm({
           {pending ? "Sending…" : <>Send enquiry <span className="arr">→</span></>}
         </button>
         <p className="fineprint">I read every message personally.</p>
+      </div>
+
+      <div className="form-done" role="status" aria-live="polite">
+        <div className="tick">✓</div>
+        {ack.eyebrow && <span className="ack-eyebrow">{ack.eyebrow}</span>}
+        <h3>{personalise(ack.heading, lead?.name)}</h3>
+        {ack.body && <p>{ack.body}</p>}
+        {lead?.message && (
+          <div className="ack-echo">
+            {ack.echoLabel && <div className="lbl">{ack.echoLabel}</div>}
+            <div className="val">&ldquo;{lead.message}&rdquo;</div>
+          </div>
+        )}
+        {(bookingHref || ack.contactEmail) && (
+          <div className="ack-actions">
+            {bookingHref && (
+              <a className="btn btn-primary" href={bookingHref} target="_blank" rel="noopener">
+                {ack.ctaLabel || "Pick a time"} <span className="arr">→</span>
+              </a>
+            )}
+            {ack.contactEmail && (
+              <span className="ack-alt">
+                Prefer email? <a href={`mailto:${ack.contactEmail}`}>{ack.contactEmail}</a>
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </form>
   );

@@ -106,18 +106,30 @@ create policy "public read homepage"     on public.homepage     for select using
 -- =============================================================
 -- SEED CONTENT (matches the original mockups). Optional but handy.
 -- =============================================================
-insert into public.services (number, title, description, link, sort_order) values
+-- Remove duplicate service rows left behind by earlier (non-idempotent) runs.
+delete from public.services a using public.services b
+  where a.ctid > b.ctid and a.number = b.number and a.title = b.title;
+-- Seed ONLY when the table is empty, so re-running this file never re-duplicates.
+insert into public.services (number, title, description, link, sort_order)
+select * from (values
   ('01','Brand & GTM','Positioning and a go-to-market the whole company can actually run. The sharpest version of what you do, who it''s for, and why it wins — built to execute, not just admire.','',1),
   ('02','Growth Marketing','The few channels and moves that actually move the number. Less motion, more progress — a focused read on where the next dollar compounds, and the discipline to ignore the rest.','',2),
   ('03','AI Automation','Practical AI systems that take real, repeatable work off the team. Content pipelines, reporting, and back-office workflows that run themselves — built by an operator who ships with AI daily.','',3),
   ('04','Marketing Ops','The operating system that lets marketing scale cleanly as you grow. Process, stack, and team designed so output never bottlenecks on one person or breaks under load.','',4)
-on conflict do nothing;
+) as v(number, title, description, link, sort_order)
+where not exists (select 1 from public.services);
 
-insert into public.testimonials (quote, name, role, sort_order) values
+-- Remove duplicate testimonial rows left behind by earlier (non-idempotent) runs.
+delete from public.testimonials a using public.testimonials b
+  where a.ctid > b.ctid and a.quote = b.quote and a.name = b.name;
+-- Seed ONLY when the table is empty, so re-running this file never re-duplicates.
+insert into public.testimonials (quote, name, role, sort_order)
+select * from (values
   ('He found the lever the rest of us walked past for a year — then built the thing that pulled it. We''d spent months optimising the wrong number; he reframed the whole problem in one session and had a working system in front of us before the month was out.','Placeholder Name','Founder · SaaS',1),
   ('Strategy that didn''t stay on a slide. We had the system running inside two weeks. What struck me was how he moves between the thinking and the doing — one moment mapping the positioning, the next wiring up the automation that delivers it.','Placeholder Name','COO · Agency',2),
   ('The rare operator who can hold the whole picture and still ship the detail himself. He came in to fix our reporting and left us with a clearer view of the entire funnel — and the discipline to act on it.','Placeholder Name','VP Growth · DTC',3)
-on conflict do nothing;
+) as v(quote, name, role, sort_order)
+where not exists (select 1 from public.testimonials);
 
 insert into public.projects (title, slug, category, summary, image_url, featured, sort_order) values
   ('Social-media automation engine','social-media-automation-engine','AI Automation','One content idea → captioned, scheduled, and posted across channels, with reporting that writes itself.','https://picsum.photos/seed/ol-proj-social/1000/1200',true,1),
@@ -230,9 +242,16 @@ drop policy if exists "public read nav_items" on public.nav_items;
 create policy "public read site_settings" on public.site_settings for select using (true);
 create policy "public read nav_items" on public.nav_items for select using (true);
 
-insert into public.nav_items (label, href, sort_order) values
+-- Remove duplicate menu items left behind by earlier (non-idempotent) runs —
+-- this is what caused "About Us showing twice / everything showing twice".
+delete from public.nav_items a using public.nav_items b
+  where a.ctid > b.ctid and a.label = b.label and a.href = b.href;
+-- Seed ONLY when the table is empty, so re-running this file never re-duplicates.
+insert into public.nav_items (label, href, sort_order)
+select * from (values
   ('About','/#about',1),('Practice','/#services',2),('Work','/#work',3),('Insights','/insights',4)
-on conflict do nothing;
+) as v(label, href, sort_order)
+where not exists (select 1 from public.nav_items);
 
 -- =============================================================
 -- v4 ADDITIONS — SEO / meta (per-page title, description, keywords)
@@ -256,3 +275,30 @@ on conflict (slug) do nothing;
 alter table public.posts add column if not exists meta_title       text default '';
 alter table public.posts add column if not exists meta_description  text default '';
 alter table public.posts add column if not exists meta_keywords     text default '';
+
+-- =============================================================
+-- v5 ADDITIONS — editable hero CTAs, services CTA label, testimonial image
+-- =============================================================
+-- Hero call-to-action buttons (were previously hardcoded)
+alter table public.homepage add column if not exists hero_cta1_label text default 'I need help';
+alter table public.homepage add column if not exists hero_cta1_href  text default '#enquiry';
+alter table public.homepage add column if not exists hero_cta2_label text default 'See the work';
+alter table public.homepage add column if not exists hero_cta2_href  text default '#work';
+
+-- Practice-area card CTA label (was hardcoded "Know more")
+alter table public.services add column if not exists cta_label text default 'Know more';
+
+-- Testimonial client photo
+alter table public.testimonials add column if not exists image_url text default '';
+
+-- Enquiry acknowledgement screen (shown after the contact form is submitted)
+alter table public.homepage add column if not exists ack_eyebrow      text default 'Received';
+alter table public.homepage add column if not exists ack_heading      text default 'Got it, {name} — thank you.';
+alter table public.homepage add column if not exists ack_body         text default 'Your note is in, and your details are saved. The next step is a short working session — pick a time that suits you.';
+alter table public.homepage add column if not exists ack_echo_label   text default 'What you sent';
+alter table public.homepage add column if not exists ack_cta_label    text default 'Pick a time on Calendly';
+alter table public.homepage add column if not exists ack_cta_href     text default '';
+alter table public.homepage add column if not exists ack_contact_email text default 'hello@theoutlayer.com';
+
+-- About → "Employers" credibility row (comma- or newline-separated company names)
+alter table public.homepage add column if not exists about_employers text default 'Accenture, Google, AdGlobal360, NP Digital';

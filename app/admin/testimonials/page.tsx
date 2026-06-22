@@ -1,5 +1,6 @@
 import { AdminShell } from "@/components/AdminShell";
 import { DeleteButton } from "@/components/admin/DeleteButton";
+import { ImageField } from "@/components/admin/ImageField";
 import { adminListTestimonials } from "@/lib/admin-data";
 import { saveTestimonial, deleteTestimonial } from "../actions";
 import type { Testimonial } from "@/lib/types";
@@ -24,6 +25,12 @@ function TestimonialFields({ t }: { t?: Testimonial }) {
           <input name="role" defaultValue={t?.role ?? ""} placeholder="Founder · SaaS" />
         </div>
       </div>
+      <ImageField
+        name="image_url"
+        label="Client photo (optional)"
+        currentUrl={t?.image_url ?? ""}
+        spec="Client photo — square, 200×200px, max 1MB, PNG/JPG. Shown as a round avatar."
+      />
       <div className="fld">
         <label>Sort order</label>
         <input name="sort_order" type="number" defaultValue={t?.sort_order ?? 0} />

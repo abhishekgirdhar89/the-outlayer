@@ -43,6 +43,7 @@ export type Service = {
   title: string;
   description: string;
   link: string;
+  cta_label: string;
   image_url: string;
   sort_order: number;
 };
@@ -100,6 +101,7 @@ export type Testimonial = {
   quote: string;
   name: string;
   role: string;
+  image_url: string;
   sort_order: number;
 };
 
@@ -109,10 +111,15 @@ export type Homepage = {
   hero_title: string;
   hero_position: string;
   hero_subtitle: string;
+  hero_cta1_label: string;
+  hero_cta1_href: string;
+  hero_cta2_label: string;
+  hero_cta2_href: string;
   about_kicker: string;
   about_heading: string;
   about_subheading: string;
   about_body: string;
+  about_employers: string;
   about_photo_url: string;
   stat1_value: string; stat1_unit: string; stat1_label: string;
   stat2_value: string; stat2_unit: string; stat2_label: string;
@@ -130,6 +137,13 @@ export type Homepage = {
   enquiry_eyebrow: string;
   enquiry_heading: string;
   enquiry_body: string;
+  ack_eyebrow: string;
+  ack_heading: string;
+  ack_body: string;
+  ack_echo_label: string;
+  ack_cta_label: string;
+  ack_cta_href: string;
+  ack_contact_email: string;
   show_hero: boolean;
   show_about: boolean;
   show_services: boolean;

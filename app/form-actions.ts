@@ -9,6 +9,8 @@ export type FormState = {
   ok: boolean;
   error?: string;
   fieldErrors?: Record<string, string>;
+  /** Echoed back on success so the acknowledgement screen can personalise. */
+  lead?: { name: string; email: string; message: string };
 };
 
 /** Contact / enquiry form → leads table. Includes email+phone validation,
@@ -48,7 +50,7 @@ export async function submitEnquiry(_prev: FormState, formData: FormData): Promi
     console.error("submitEnquiry failed:", e);
     return { ok: false, error: "Something went wrong saving your enquiry. Please try again." };
   }
-  return { ok: true };
+  return { ok: true, lead: { name, email, message } };
 }
 
 /** Newsletter subscribe → subscribers table, with email validation + dedupe. */
