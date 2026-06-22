@@ -9,9 +9,9 @@ export const metadata = { title: "Header & Footer — The Outlayer Admin" };
 export default async function HeaderFooterAdmin({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string }>;
+  searchParams: Promise<{ saved?: string; deleted?: string }>;
 }) {
-  const { saved } = await searchParams;
+  const { saved, deleted } = await searchParams;
 
   let settings, navItems;
   try {
@@ -27,6 +27,7 @@ export default async function HeaderFooterAdmin({
   return (
     <AdminShell active="header-footer" title="Header & Footer" subtitle="Brand, navigation menu, CTA, and footer.">
       {saved && <div className="flash">Saved. Your changes are live across the site.</div>}
+      {deleted && <div className="flash">Removed. Your changes are live across the site.</div>}
 
       {/* BRAND + CTA + FOOTER */}
       <form action={saveSiteSettings}>

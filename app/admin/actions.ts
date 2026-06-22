@@ -44,7 +44,7 @@ export async function saveProject(formData: FormData) {
   fail(error);
   refreshPublic();
   revalidatePath("/admin/projects");
-  redirect("/admin/projects");
+  redirect("/admin/projects?saved=1");
 }
 
 export async function deleteProject(formData: FormData) {
@@ -53,7 +53,7 @@ export async function deleteProject(formData: FormData) {
   fail(error);
   refreshPublic();
   revalidatePath("/admin/projects");
-  redirect("/admin/projects");
+  redirect("/admin/projects?deleted=1");
 }
 
 // ============================ POSTS ============================
@@ -85,7 +85,7 @@ export async function savePost(formData: FormData) {
   refreshPublic();
   revalidatePath("/admin/posts");
   if (payload.slug) revalidatePath(`/insights/${payload.slug}`);
-  redirect("/admin/posts");
+  redirect("/admin/posts?saved=1");
 }
 
 export async function deletePost(formData: FormData) {
@@ -94,7 +94,7 @@ export async function deletePost(formData: FormData) {
   fail(error);
   refreshPublic();
   revalidatePath("/admin/posts");
-  redirect("/admin/posts");
+  redirect("/admin/posts?deleted=1");
 }
 
 // ============================ SERVICES ============================
@@ -116,7 +116,7 @@ export async function saveService(formData: FormData) {
   fail(error);
   refreshPublic();
   revalidatePath("/admin/services");
-  redirect("/admin/services");
+  redirect("/admin/services?saved=1");
 }
 
 export async function deleteService(formData: FormData) {
@@ -125,7 +125,7 @@ export async function deleteService(formData: FormData) {
   fail(error);
   refreshPublic();
   revalidatePath("/admin/services");
-  redirect("/admin/services");
+  redirect("/admin/services?deleted=1");
 }
 
 // ============================ TESTIMONIALS ============================
@@ -145,7 +145,7 @@ export async function saveTestimonial(formData: FormData) {
   fail(error);
   refreshPublic();
   revalidatePath("/admin/testimonials");
-  redirect("/admin/testimonials");
+  redirect("/admin/testimonials?saved=1");
 }
 
 export async function deleteTestimonial(formData: FormData) {
@@ -154,7 +154,7 @@ export async function deleteTestimonial(formData: FormData) {
   fail(error);
   refreshPublic();
   revalidatePath("/admin/testimonials");
-  redirect("/admin/testimonials");
+  redirect("/admin/testimonials?deleted=1");
 }
 
 // ============================ HOMEPAGE ============================
@@ -231,7 +231,7 @@ export async function saveClient(formData: FormData) {
   fail(error);
   refreshPublic();
   revalidatePath("/admin/clients");
-  redirect("/admin/clients");
+  redirect("/admin/clients?saved=1");
 }
 
 export async function deleteClient(formData: FormData) {
@@ -240,7 +240,7 @@ export async function deleteClient(formData: FormData) {
   fail(error);
   refreshPublic();
   revalidatePath("/admin/clients");
-  redirect("/admin/clients");
+  redirect("/admin/clients?deleted=1");
 }
 
 // ============================ LEAD STATUSES ============================
@@ -326,7 +326,7 @@ export async function saveNavItem(formData: FormData) {
     : await supabase.from("nav_items").insert(payload);
   fail(error);
   revalidatePath("/", "layout");
-  redirect("/admin/header-footer");
+  redirect("/admin/header-footer?saved=1");
 }
 
 export async function deleteNavItem(formData: FormData) {
@@ -334,7 +334,7 @@ export async function deleteNavItem(formData: FormData) {
   const { error } = await supabase.from("nav_items").delete().eq("id", str(formData, "id"));
   fail(error);
   revalidatePath("/", "layout");
-  redirect("/admin/header-footer");
+  redirect("/admin/header-footer?deleted=1");
 }
 
 // ============================ PAGE SEO ============================

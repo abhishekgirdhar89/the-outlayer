@@ -1,6 +1,7 @@
 import { AdminShell } from "@/components/AdminShell";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { ImageField } from "@/components/admin/ImageField";
+import { SaveFlash } from "@/components/admin/SaveFlash";
 import { adminListServices } from "@/lib/admin-data";
 import { saveService, deleteService } from "../actions";
 import type { Service } from "@/lib/types";
@@ -49,7 +50,12 @@ function ServiceFields({ s }: { s?: Service }) {
   );
 }
 
-export default async function ServicesAdmin() {
+export default async function ServicesAdmin({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string; deleted?: string }>;
+}) {
+  const { saved, deleted } = await searchParams;
   let services;
   try {
     services = await adminListServices();
@@ -67,6 +73,7 @@ export default async function ServicesAdmin() {
       title="Services"
       subtitle="The four “Practice Areas” cards on the homepage."
     >
+      <SaveFlash saved={saved} deleted={deleted} />
       <div className="admin-card">
         <h3 style={{ fontFamily: "var(--display)", fontWeight: 600, marginBottom: 16 }}>
           Add a service

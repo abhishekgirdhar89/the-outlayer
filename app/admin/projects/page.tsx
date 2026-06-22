@@ -1,13 +1,19 @@
 import Link from "next/link";
 import { AdminShell } from "@/components/AdminShell";
 import { DeleteButton } from "@/components/admin/DeleteButton";
+import { SaveFlash } from "@/components/admin/SaveFlash";
 import { adminListProjects } from "@/lib/admin-data";
 import { deleteProject } from "../actions";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Projects — The Outlayer Admin" };
 
-export default async function ProjectsAdmin() {
+export default async function ProjectsAdmin({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string; deleted?: string }>;
+}) {
+  const { saved, deleted } = await searchParams;
   let projects;
   try {
     projects = await adminListProjects();
@@ -30,6 +36,7 @@ export default async function ProjectsAdmin() {
         </Link>
       }
     >
+      <SaveFlash saved={saved} deleted={deleted} />
       {projects.length === 0 ? (
         <div className="admin-card admin-empty">No projects yet. Create your first one.</div>
       ) : (

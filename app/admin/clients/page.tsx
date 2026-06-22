@@ -1,6 +1,7 @@
 import { AdminShell } from "@/components/AdminShell";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { ImageField } from "@/components/admin/ImageField";
+import { SaveFlash } from "@/components/admin/SaveFlash";
 import { adminListClients } from "@/lib/admin-data";
 import { saveClient, deleteClient } from "../actions";
 import type { Client } from "@/lib/types";
@@ -31,7 +32,12 @@ function ClientFields({ c }: { c?: Client }) {
   );
 }
 
-export default async function ClientsAdmin() {
+export default async function ClientsAdmin({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string; deleted?: string }>;
+}) {
+  const { saved, deleted } = await searchParams;
   let clients;
   try {
     clients = await adminListClients();
@@ -49,6 +55,7 @@ export default async function ClientsAdmin() {
       title="Clients"
       subtitle="The scrolling “Built alongside” strip on the homepage."
     >
+      <SaveFlash saved={saved} deleted={deleted} />
       <div className="admin-card">
         <h3 className="sec-title">Add a client</h3>
         <form action={saveClient}>

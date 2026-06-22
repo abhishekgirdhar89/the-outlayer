@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AdminShell } from "@/components/AdminShell";
 import { DeleteButton } from "@/components/admin/DeleteButton";
+import { SaveFlash } from "@/components/admin/SaveFlash";
 import { adminListPosts } from "@/lib/admin-data";
 import { formatMonthYear } from "@/lib/utils";
 import { deletePost } from "../actions";
@@ -8,7 +9,12 @@ import { deletePost } from "../actions";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Posts — The Outlayer Admin" };
 
-export default async function PostsAdmin() {
+export default async function PostsAdmin({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string; deleted?: string }>;
+}) {
+  const { saved, deleted } = await searchParams;
   let posts;
   try {
     posts = await adminListPosts();
@@ -31,6 +37,7 @@ export default async function PostsAdmin() {
         </Link>
       }
     >
+      <SaveFlash saved={saved} deleted={deleted} />
       {posts.length === 0 ? (
         <div className="admin-card admin-empty">No posts yet. Write your first one.</div>
       ) : (

@@ -1,6 +1,7 @@
 import { AdminShell } from "@/components/AdminShell";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { ImageField } from "@/components/admin/ImageField";
+import { SaveFlash } from "@/components/admin/SaveFlash";
 import { adminListTestimonials } from "@/lib/admin-data";
 import { saveTestimonial, deleteTestimonial } from "../actions";
 import type { Testimonial } from "@/lib/types";
@@ -39,7 +40,12 @@ function TestimonialFields({ t }: { t?: Testimonial }) {
   );
 }
 
-export default async function TestimonialsAdmin() {
+export default async function TestimonialsAdmin({
+  searchParams,
+}: {
+  searchParams: Promise<{ saved?: string; deleted?: string }>;
+}) {
+  const { saved, deleted } = await searchParams;
   let items;
   try {
     items = await adminListTestimonials();
@@ -57,6 +63,7 @@ export default async function TestimonialsAdmin() {
       title="Testimonials"
       subtitle="Quotes shown in the homepage “Kind words” section."
     >
+      <SaveFlash saved={saved} deleted={deleted} />
       <div className="admin-card">
         <h3 style={{ fontFamily: "var(--display)", fontWeight: 600, marginBottom: 16 }}>
           Add a testimonial
