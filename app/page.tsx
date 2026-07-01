@@ -28,6 +28,8 @@ export async function generateMetadata() {
     title: seo?.meta_title,
     description: seo?.meta_description,
     keywords: seo?.meta_keywords,
+    image: seo?.og_image,
+    path: "/",
     fallbackTitle: "The Outlayer — Strategy that gets built · Abhishek Girdhar",
     fallbackDescription:
       "The independent practice of Abhishek Girdhar — strategy, operations and technology for founders and operators.",

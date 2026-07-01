@@ -469,6 +469,25 @@ footer.foot{color:rgba(244,241,233,0.5); padding:var(--s7) 0 var(--s8); border-t
 .d-prose li::before{content:""; position:absolute; left:4px; top:11px; width:9px; height:9px; border-radius:2px; background:var(--blue-bright);}
 .d-prose li strong{color:var(--bone);}
 .d-prose img{margin:1.7em 0; border:1px solid var(--bd); border-radius:var(--r-md); width:100%;}
+/* pull quote authored in the visual editor (renders as <blockquote class="pq">) */
+.d-prose blockquote.pq{margin:1.5em 0; padding-left:var(--s6); border-left:2px solid var(--blue-bright); font-family:var(--display); font-weight:500; font-size:clamp(22px,2.4vw,30px); line-height:1.28; letter-spacing:-0.02em; color:var(--bone);}
+.d-prose blockquote.pq p{margin:0; font:inherit; color:inherit;}
+/* numbered lists (square bullets are for unordered lists only) */
+.d-prose ol{list-style:decimal; margin:1.2em 0; padding-left:26px; display:flex; flex-direction:column; gap:13px; color:rgba(244,241,233,0.76);}
+.d-prose ol li{padding-left:6px; font-size:17px; line-height:1.55;}
+.d-prose ol li::before{display:none;}
+
+/* ---------- Visual content editor (admin) ---------- */
+.rte{border:1px solid var(--bd); border-radius:var(--r-md); background:var(--lift); overflow:hidden;}
+.rte-toolbar{display:flex; flex-wrap:wrap; align-items:center; gap:4px; padding:8px 10px; border-bottom:1px solid var(--bd); background:rgba(244,241,233,0.025); position:sticky; top:0; z-index:2;}
+.rte-btn{font-family:var(--body); font-size:13px; line-height:1; color:rgba(244,241,233,0.72); background:transparent; border:1px solid transparent; border-radius:8px; padding:7px 9px; cursor:pointer; transition:background .15s, color .15s, border-color .15s;}
+.rte-btn:hover{background:var(--card-h); color:var(--bone);}
+.rte-btn.is-active{background:rgba(110,155,255,0.16); border-color:var(--bd-h); color:var(--blue-bright);}
+.rte-sep{width:1px; height:20px; background:var(--bd); margin:0 4px;}
+.rte .ProseMirror{padding:22px 24px; min-height:340px; outline:none;}
+.rte .ProseMirror:focus{outline:none;}
+.rte-content.d-prose{max-width:none;}
+.rte .ProseMirror p.is-editor-empty:first-child::before{content:"Start writing your article…"; color:rgba(244,241,233,0.32); float:left; height:0; pointer-events:none;}
 /* in-prose figure (lead image) — matches design #3 */
 .d-fig{margin:1.7em 0; border:1px solid var(--bd); border-radius:var(--r-md); overflow:hidden; background:var(--navy-900);}
 .d-fig.lead-fig{margin:1.9em 0 2.1em; border-radius:var(--r-lg);}

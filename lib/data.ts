@@ -9,6 +9,10 @@ export const SITE_DEFAULTS: SiteSettings = {
   header_cta_href: "/#enquiry",
   footer_tagline: "The non-obvious move. · Strategy that gets built.",
   footer_copyright: "© 2026 · Abhishek Girdhar",
+  site_url: "https://theoutlayer.com",
+  default_og_image: "",
+  twitter_handle: "",
+  ga_measurement_id: "",
 };
 
 export const NAV_DEFAULTS: NavItem[] = [
@@ -174,29 +178,69 @@ export async function getPageSeo(slug: string): Promise<PageSeo | null> {
   }
 }
 
-/** Build a Next Metadata object from SEO fields, with fallbacks. */
-export function buildMetadata(opts: {
+/** Normalize the configured site URL into a valid absolute origin (no trailing slash). */
+export function resolveSiteUrl(raw: string | null | undefined): string {
+  const fallback = "https://theoutlayer.com";
+  const value = (raw || "").trim() || fallback;
+  try {
+    return new URL(value).origin;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
+ * Build a Next Metadata object from SEO fields, with fallbacks.
+ * Pulls global defaults (site URL, default social image, Twitter handle) from
+ * site_settings so OG images resolve to absolute URLs and social cards render.
+ */
+export async function buildMetadata(opts: {
   title?: string | null;
   description?: string | null;
   keywords?: string | null;
   fallbackTitle: string;
   fallbackDescription: string;
   image?: string | null;
-}): Metadata {
+  /** Path for the canonical URL & og:url, e.g. "/" or "/insights/<slug>". */
+  path?: string;
+  ogType?: "website" | "article";
+}): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const siteUrl = resolveSiteUrl(settings.site_url);
+
   const title = (opts.title || "").trim() || opts.fallbackTitle;
   const description = (opts.description || "").trim() || opts.fallbackDescription;
   const keywords = (opts.keywords || "")
     .split(",")
     .map((k) => k.trim())
     .filter(Boolean);
+
+  // Page image → global default → none.
+  const image = (opts.image || "").trim() || (settings.default_og_image || "").trim() || "";
+  const images = image ? [image] : undefined;
+  const handle = (settings.twitter_handle || "").trim();
+
   return {
+    metadataBase: new URL(siteUrl),
     title,
     description,
     keywords: keywords.length ? keywords : undefined,
+    alternates: opts.path ? { canonical: opts.path } : undefined,
     openGraph: {
+      type: opts.ogType ?? "website",
       title,
       description,
-      images: opts.image ? [opts.image] : undefined,
+      url: opts.path ?? undefined,
+      siteName: settings.brand_name || "The Outlayer",
+      images,
+    },
+    twitter: {
+      card: images ? "summary_large_image" : "summary",
+      title,
+      description,
+      images,
+      creator: handle || undefined,
+      site: handle || undefined,
     },
   };
 }

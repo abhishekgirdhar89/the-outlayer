@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { savePost } from "@/app/admin/actions";
 import { ImageField } from "./ImageField";
+import { RichTextEditor } from "./RichTextEditor";
+import { SeoFields } from "./SeoFields";
 import type { Post } from "@/lib/types";
 
 function dateInputValue(iso: string | null): string {
@@ -44,18 +46,12 @@ export function PostForm({ post }: { post?: Post }) {
       </div>
 
       <div className="fld">
-        <label htmlFor="content">Content (HTML)</label>
-        <textarea
-          id="content"
-          name="content"
-          defaultValue={post?.content ?? ""}
-          rows={16}
-          placeholder={'<p class="intro">Opening paragraph…</p>\n<h2>A section heading</h2>\n<p>Body…</p>\n<div class="pq">A pull quote.</div>\n<ul><li>List item</li></ul>'}
-          style={{ fontFamily: "var(--mono)", fontSize: 13 }}
-        />
+        <label htmlFor="content">Content</label>
+        <RichTextEditor name="content" defaultValue={post?.content ?? ""} />
         <span className="hint">
-          HTML supported. Use &lt;p class=&quot;intro&quot;&gt; for the lead, &lt;h2&gt; for sections
-          (auto-added to the contents rail), &lt;div class=&quot;pq&quot;&gt; for a pull quote.
+          Write naturally — use the toolbar for headings, <strong>bold</strong>, lists, links and
+          pull quotes. <strong>Intro</strong> styles the opening paragraph with the drop cap.
+          Headings (H2) are added to the article&apos;s contents rail automatically.
         </span>
       </div>
 
@@ -104,21 +100,20 @@ export function PostForm({ post }: { post?: Post }) {
         <h3 className="sec-title" style={{ border: 0, paddingBottom: 0, marginBottom: 16 }}>
           SEO / meta
         </h3>
-        <div className="fld">
-          <label htmlFor="meta_title">Meta title</label>
-          <input id="meta_title" name="meta_title" defaultValue={post?.meta_title ?? ""} placeholder="Defaults to the post title" />
-          <span className="hint">Shown in browser tabs &amp; search results. ~50–60 chars. Leave blank to use the title.</span>
-        </div>
-        <div className="fld">
-          <label htmlFor="meta_description">Meta description</label>
-          <textarea id="meta_description" name="meta_description" defaultValue={post?.meta_description ?? ""} rows={2} placeholder="Defaults to the excerpt" />
-          <span className="hint">~150–160 chars. Leave blank to use the excerpt.</span>
-        </div>
-        <div className="fld">
-          <label htmlFor="meta_keywords">Meta keywords</label>
-          <input id="meta_keywords" name="meta_keywords" defaultValue={post?.meta_keywords ?? ""} placeholder="strategy, positioning, go-to-market" />
-          <span className="hint">Comma-separated. Optional.</span>
-        </div>
+        <SeoFields
+          source="post"
+          defaults={{
+            meta_title: post?.meta_title ?? "",
+            meta_description: post?.meta_description ?? "",
+            meta_keywords: post?.meta_keywords ?? "",
+          }}
+        />
+        <ImageField
+          name="og_image"
+          label="Social share image"
+          currentUrl={post?.og_image ?? ""}
+          spec="Social image — 1200×630px, max 1MB, PNG/JPG. Shown when the article is shared on LinkedIn / X / WhatsApp. Leave blank to use the featured image."
+        />
       </div>
 
       <div className="admin-actions">

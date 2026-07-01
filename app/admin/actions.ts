@@ -76,6 +76,7 @@ export async function savePost(formData: FormData) {
     meta_title: str(formData, "meta_title"),
     meta_description: str(formData, "meta_description"),
     meta_keywords: str(formData, "meta_keywords"),
+    og_image: await resolveImage(formData, "og_image", "seo"),
   };
   const supabase = getAdminClient();
   const { error } = id
@@ -344,11 +345,30 @@ export async function savePageSeo(formData: FormData) {
     meta_title: str(formData, "meta_title"),
     meta_description: str(formData, "meta_description"),
     meta_keywords: str(formData, "meta_keywords"),
+    og_image: await resolveImage(formData, "og_image", "seo"),
   };
   const supabase = getAdminClient();
   const { error } = await supabase.from("page_seo").upsert(payload, { onConflict: "slug" });
   fail(error);
   refreshPublic();
+  revalidatePath("/admin/seo");
+  redirect("/admin/seo?saved=1");
+}
+
+// Global social/search defaults + analytics (stored on the site_settings singleton).
+export async function saveSeoDefaults(formData: FormData) {
+  const payload = {
+    id: 1,
+    site_url: str(formData, "site_url"),
+    twitter_handle: str(formData, "twitter_handle"),
+    ga_measurement_id: str(formData, "ga_measurement_id"),
+    default_og_image: await resolveImage(formData, "default_og_image", "seo"),
+  };
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("site_settings").upsert(payload, { onConflict: "id" });
+  fail(error);
+  // SEO defaults, analytics & metadataBase live in the root layout → revalidate everything.
+  revalidatePath("/", "layout");
   revalidatePath("/admin/seo");
   redirect("/admin/seo?saved=1");
 }

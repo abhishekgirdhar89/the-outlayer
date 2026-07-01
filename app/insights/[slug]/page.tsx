@@ -19,16 +19,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return { title: "Not found — The Outlayer" };
-  const meta = buildMetadata({
+  return buildMetadata({
     title: post.meta_title,
     description: post.meta_description,
     keywords: post.meta_keywords,
     fallbackTitle: `${post.title} — The Outlayer`,
     fallbackDescription: post.excerpt,
-    image: post.cover_image_url,
+    image: post.og_image || post.cover_image_url,
+    path: `/insights/${post.slug}`,
+    ogType: "article",
   });
-  if (meta.openGraph) (meta.openGraph as { type?: string }).type = "article";
-  return meta;
 }
 
 export default async function PostPage({ params }: Props) {

@@ -16,6 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: seo?.meta_title,
     description: seo?.meta_description,
     keywords: seo?.meta_keywords,
+    image: seo?.og_image,
+    path: "/insights",
     fallbackTitle: "Insights — The Outlayer",
     fallbackDescription:
       "Strategy, operations, growth, and AI — for people who build. Short reads on the move beneath the obvious.",

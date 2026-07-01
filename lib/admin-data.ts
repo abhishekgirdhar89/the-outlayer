@@ -123,6 +123,7 @@ export async function adminListPageSeo(): Promise<(PageSeo & { label: string })[
       meta_title: row?.meta_title ?? "",
       meta_description: row?.meta_description ?? "",
       meta_keywords: row?.meta_keywords ?? "",
+      og_image: row?.og_image ?? "",
     };
   });
 }

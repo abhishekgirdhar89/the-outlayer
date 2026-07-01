@@ -302,3 +302,20 @@ alter table public.homepage add column if not exists ack_contact_email text defa
 
 -- About → "Employers" credibility row (comma- or newline-separated company names)
 alter table public.homepage add column if not exists about_employers text default 'Accenture, Google, AdGlobal360, NP Digital';
+
+-- =============================================================
+-- v6 ADDITIONS — social/search defaults + per-page OG image
+-- =============================================================
+-- Global SEO defaults (live on the site_settings singleton)
+alter table public.site_settings add column if not exists site_url         text default 'https://theoutlayer.com';
+alter table public.site_settings add column if not exists default_og_image text default '';
+alter table public.site_settings add column if not exists twitter_handle   text default '';
+
+-- Per-page social share image (home, insights). Posts use their cover image.
+alter table public.page_seo add column if not exists og_image text default '';
+
+-- Google Analytics (GA4) measurement ID, e.g. G-XXXXXXXXXX. Empty = analytics off.
+alter table public.site_settings add column if not exists ga_measurement_id text default '';
+
+-- Per-post social share image (overrides the featured image for OG/Twitter cards)
+alter table public.posts add column if not exists og_image text default '';

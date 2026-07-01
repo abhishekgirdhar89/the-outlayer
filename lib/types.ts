@@ -28,6 +28,7 @@ export type Post = {
   meta_title: string;
   meta_description: string;
   meta_keywords: string;
+  og_image: string;
 };
 
 export type PageSeo = {
@@ -35,6 +36,7 @@ export type PageSeo = {
   meta_title: string;
   meta_description: string;
   meta_keywords: string;
+  og_image: string;
 };
 
 export type Service = {
@@ -87,6 +89,10 @@ export type SiteSettings = {
   header_cta_href: string;
   footer_tagline: string;
   footer_copyright: string;
+  site_url: string;
+  default_og_image: string;
+  twitter_handle: string;
+  ga_measurement_id: string;
 };
 
 export type NavItem = {
