@@ -13,6 +13,7 @@ import type {
   SiteSettings,
   NavItem,
   PageSeo,
+  PostCategory,
 } from "./types";
 
 export async function adminListProjects(): Promise<Project[]> {
@@ -72,6 +73,18 @@ export async function adminListLeadStatuses(): Promise<LeadStatus[]> {
   const s = getAdminClient();
   const { data, error } = await s.from("lead_statuses").select("*").order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+export async function adminListPostCategories(): Promise<PostCategory[]> {
+  const s = getAdminClient();
+  const { data, error } = await s.from("post_categories").select("*").order("sort_order", { ascending: true });
+  // Fall back to an empty list if the table doesn't exist yet (pre-migration),
+  // so the post editor keeps working.
+  if (error) {
+    console.error("adminListPostCategories failed:", error.message);
+    return [];
+  }
   return data ?? [];
 }
 

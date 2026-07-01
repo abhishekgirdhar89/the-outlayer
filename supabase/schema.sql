@@ -319,3 +319,24 @@ alter table public.site_settings add column if not exists ga_measurement_id text
 
 -- Per-post social share image (overrides the featured image for OG/Twitter cards)
 alter table public.posts add column if not exists og_image text default '';
+
+-- =============================================================
+-- v7 ADDITIONS — managed article categories (taxonomy for Insights posts)
+-- =============================================================
+create table if not exists public.post_categories (id uuid primary key default gen_random_uuid());
+alter table public.post_categories add column if not exists name       text not null default '';
+alter table public.post_categories add column if not exists sort_order int  not null default 0;
+create unique index if not exists post_categories_name_key on public.post_categories (lower(name));
+
+alter table public.post_categories enable row level security;
+drop policy if exists "public read post_categories" on public.post_categories;
+create policy "public read post_categories" on public.post_categories for select using (true);
+
+-- Seed from categories already used by posts, then a few sensible defaults.
+insert into public.post_categories (name, sort_order)
+select distinct category, 0 from public.posts
+  where coalesce(category, '') <> ''
+    and not exists (select 1 from public.post_categories pc where lower(pc.name) = lower(posts.category));
+insert into public.post_categories (name, sort_order)
+select v.name, v.so from (values ('Strategy', 1), ('AI in practice', 2), ('Growth', 3), ('Operations', 4)) as v(name, so)
+  where not exists (select 1 from public.post_categories pc where lower(pc.name) = lower(v.name));

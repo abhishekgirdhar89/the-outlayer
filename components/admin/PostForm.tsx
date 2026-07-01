@@ -3,7 +3,7 @@ import { savePost } from "@/app/admin/actions";
 import { ImageField } from "./ImageField";
 import { RichTextEditor } from "./RichTextEditor";
 import { SeoFields } from "./SeoFields";
-import type { Post } from "@/lib/types";
+import type { Post, PostCategory } from "@/lib/types";
 
 function dateInputValue(iso: string | null): string {
   if (!iso) return "";
@@ -12,7 +12,12 @@ function dateInputValue(iso: string | null): string {
   return d.toISOString().slice(0, 10);
 }
 
-export function PostForm({ post }: { post?: Post }) {
+export function PostForm({ post, categories = [] }: { post?: Post; categories?: PostCategory[] }) {
+  const current = post?.category ?? categories[0]?.name ?? "Strategy";
+  // Include the post's current category even if it's no longer in the managed list.
+  const options = categories.some((c) => c.name === current)
+    ? categories.map((c) => c.name)
+    : [current, ...categories.map((c) => c.name)];
   return (
     <form action={savePost} className="admin-card">
       {post && <input type="hidden" name="id" value={post.id} />}
@@ -30,13 +35,19 @@ export function PostForm({ post }: { post?: Post }) {
         </div>
         <div className="fld">
           <label htmlFor="category">Category</label>
-          <input
-            id="category"
-            name="category"
-            defaultValue={post?.category ?? "Strategy"}
-            placeholder="Strategy / AI in practice / Growth / Operations"
-          />
-          <span className="hint">Drives the insights filter chips.</span>
+          <select id="category" name="category" defaultValue={current}>
+            {options.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+          <span className="hint">
+            Drives the insights filter chips.{" "}
+            <Link className="linklike" href="/admin/posts/categories" target="_blank">
+              Manage categories ↗
+            </Link>
+          </span>
         </div>
       </div>
 

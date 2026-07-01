@@ -265,6 +265,38 @@ export async function deleteLeadStatus(formData: FormData) {
   redirect("/admin/leads/statuses");
 }
 
+// ============================ POST CATEGORIES ============================
+export async function savePostCategory(formData: FormData) {
+  const id = str(formData, "id");
+  const name = str(formData, "name");
+  const sort_order = int(formData, "sort_order");
+  if (!name) throw new Error("Category name is required.");
+  const supabase = getAdminClient();
+  if (id) {
+    // Keep existing posts in sync when a category is renamed.
+    const { data: prev } = await supabase.from("post_categories").select("name").eq("id", id).maybeSingle();
+    const { error } = await supabase.from("post_categories").update({ name, sort_order }).eq("id", id);
+    fail(error);
+    if (prev?.name && prev.name !== name) {
+      await supabase.from("posts").update({ category: name }).eq("category", prev.name);
+    }
+  } else {
+    const { error } = await supabase.from("post_categories").insert({ name, sort_order });
+    fail(error);
+  }
+  refreshPublic();
+  revalidatePath("/admin/posts/categories");
+  redirect("/admin/posts/categories?saved=1");
+}
+
+export async function deletePostCategory(formData: FormData) {
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("post_categories").delete().eq("id", str(formData, "id"));
+  fail(error);
+  revalidatePath("/admin/posts/categories");
+  redirect("/admin/posts/categories?deleted=1");
+}
+
 // ============================ LEADS ============================
 export async function updateLeadStatus(formData: FormData) {
   const supabase = getAdminClient();

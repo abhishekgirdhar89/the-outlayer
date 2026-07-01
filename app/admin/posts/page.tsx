@@ -32,9 +32,14 @@ export default async function PostsAdmin({
       title="Insights / Posts"
       subtitle="Blog posts shown on the Insights page and homepage."
       actions={
-        <Link className="btn btn-primary" href="/admin/posts/new">
-          New post
-        </Link>
+        <>
+          <Link className="btn btn-ghost-dk" href="/admin/posts/categories">
+            Categories
+          </Link>
+          <Link className="btn btn-primary" href="/admin/posts/new">
+            New post
+          </Link>
+        </>
       }
     >
       <SaveFlash saved={saved} deleted={deleted} />

@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/AdminShell";
 import { PostForm } from "@/components/admin/PostForm";
 import { DeleteButton } from "@/components/admin/DeleteButton";
-import { adminGetPost } from "@/lib/admin-data";
+import { adminGetPost, adminListPostCategories } from "@/lib/admin-data";
 import { deletePost } from "../../actions";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +12,7 @@ export default async function EditPost({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const post = await adminGetPost(id);
   if (!post) notFound();
+  const categories = await adminListPostCategories();
 
   return (
     <AdminShell
@@ -20,7 +21,7 @@ export default async function EditPost({ params }: { params: Promise<{ id: strin
       subtitle={post.title}
       actions={<DeleteButton id={post.id} action={deletePost} label="Delete post" />}
     >
-      <PostForm post={post} />
+      <PostForm post={post} categories={categories} />
     </AdminShell>
   );
 }

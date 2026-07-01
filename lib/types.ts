@@ -74,6 +74,12 @@ export type LeadStatus = {
   sort_order: number;
 };
 
+export type PostCategory = {
+  id: string;
+  name: string;
+  sort_order: number;
+};
+
 export type Subscriber = {
   id: string;
   email: string;
