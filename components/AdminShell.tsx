@@ -7,6 +7,7 @@ const NAV = [
   { href: "/admin/homepage", label: "Homepage", key: "homepage" },
   { href: "/admin/header-footer", label: "Header & Footer", key: "header-footer" },
   { href: "/admin/seo", label: "SEO / Meta", key: "seo" },
+  { href: "/admin/legal", label: "Legal & Cookies", key: "legal" },
   { href: "/admin/projects", label: "Projects", key: "projects" },
   { href: "/admin/posts", label: "Insights / Posts", key: "posts" },
   { href: "/admin/services", label: "Services", key: "services" },

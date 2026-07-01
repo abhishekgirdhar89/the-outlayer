@@ -14,6 +14,7 @@ import type {
   NavItem,
   PageSeo,
   PostCategory,
+  LegalPage,
 } from "./types";
 
 export async function adminListProjects(): Promise<Project[]> {
@@ -86,6 +87,23 @@ export async function adminListPostCategories(): Promise<PostCategory[]> {
     return [];
   }
   return data ?? [];
+}
+
+export async function adminListLegalPages(): Promise<LegalPage[]> {
+  const s = getAdminClient();
+  const { data, error } = await s.from("legal_pages").select("*").order("sort_order", { ascending: true });
+  if (error) {
+    console.error("adminListLegalPages failed:", error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
+export async function adminGetLegalPage(slug: string): Promise<LegalPage | null> {
+  const s = getAdminClient();
+  const { data, error } = await s.from("legal_pages").select("*").eq("slug", slug).maybeSingle();
+  if (error) throw new Error(error.message);
+  return data ?? null;
 }
 
 export async function adminListLeads(opts?: { status?: string; sort?: "newest" | "oldest" }): Promise<Lead[]> {

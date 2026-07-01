@@ -340,3 +340,76 @@ select distinct category, 0 from public.posts
 insert into public.post_categories (name, sort_order)
 select v.name, v.so from (values ('Strategy', 1), ('AI in practice', 2), ('Growth', 3), ('Operations', 4)) as v(name, so)
   where not exists (select 1 from public.post_categories pc where lower(pc.name) = lower(v.name));
+
+-- =============================================================
+-- v8 ADDITIONS — legal pages (CMS-editable) + cookie consent banner
+-- =============================================================
+create table if not exists public.legal_pages (slug text primary key);
+alter table public.legal_pages add column if not exists title      text not null default '';
+alter table public.legal_pages add column if not exists content    text not null default '';
+alter table public.legal_pages add column if not exists published  boolean not null default true;
+alter table public.legal_pages add column if not exists sort_order int not null default 0;
+alter table public.legal_pages add column if not exists updated_at  timestamptz not null default now();
+
+alter table public.legal_pages enable row level security;
+drop policy if exists "public read legal_pages" on public.legal_pages;
+create policy "public read legal_pages" on public.legal_pages for select using (true);
+
+-- Cookie-consent banner settings (on the site_settings singleton)
+alter table public.site_settings add column if not exists cookie_enabled boolean default true;
+alter table public.site_settings add column if not exists cookie_title   text default 'We value your privacy';
+alter table public.site_settings add column if not exists cookie_message text default 'We use cookies to analyse traffic and improve your experience. Accept to help us, or reject non-essential cookies — your choice is remembered.';
+
+-- Seed the standard legal pages with editable starter content (dollar-quoted, so apostrophes are safe).
+insert into public.legal_pages (slug, title, sort_order, content) values
+('privacy-policy', 'Privacy Policy', 1, $html$<p class="intro">This Privacy Policy explains how The Outlayer ("we", "us") collects, uses, and protects your information when you visit theoutlayer.com.</p>
+<h2>Who we are</h2>
+<p>The Outlayer is the independent practice of Abhishek Girdhar. For any privacy questions, contact us at hello@theoutlayer.com.</p>
+<h2>Information we collect</h2>
+<ul><li>Details you submit through our enquiry or subscribe forms — such as your name, email, and message.</li><li>Basic analytics data — such as pages visited and approximate location — collected only with your consent.</li></ul>
+<h2>How we use your information</h2>
+<ul><li>To respond to your enquiries and provide our services.</li><li>To send updates you have subscribed to.</li><li>To understand and improve how the site is used.</li></ul>
+<h2>Cookies and analytics</h2>
+<p>We use cookies and analytics tools only after you accept them via our cookie banner. See our Cookie Policy for details. You can withdraw consent at any time by clearing your cookies.</p>
+<h2>Sharing your information</h2>
+<p>We do not sell your personal data. We may share it with service providers — such as hosting and analytics providers — strictly to operate this site.</p>
+<h2>Your rights</h2>
+<p>Depending on your location, you may have the right to access, correct, or delete your personal data, or object to its processing. To exercise these rights, email hello@theoutlayer.com.</p>
+<h2>Contact</h2>
+<p>Questions about this policy? Email hello@theoutlayer.com.</p>
+<p><em>This is a starting template — review it with a qualified professional before relying on it.</em></p>$html$),
+('terms', 'Terms & Conditions', 2, $html$<p class="intro">These Terms govern your use of theoutlayer.com and any services provided by The Outlayer.</p>
+<h2>Use of this site</h2>
+<p>By accessing this site you agree to use it lawfully and not to misuse or disrupt it.</p>
+<h2>Intellectual property</h2>
+<p>All content on this site — text, design, and graphics — belongs to The Outlayer unless stated otherwise, and may not be reproduced without permission.</p>
+<h2>Services</h2>
+<p>Any engagement for consulting or advisory services is governed by a separate agreement. Nothing on this site constitutes a binding offer.</p>
+<h2>Limitation of liability</h2>
+<p>This site and its content are provided "as is". To the fullest extent permitted by law, The Outlayer is not liable for any loss arising from your use of the site.</p>
+<h2>Changes</h2>
+<p>We may update these Terms from time to time. Continued use of the site means you accept the current version.</p>
+<h2>Contact</h2>
+<p>Questions? Email hello@theoutlayer.com.</p>
+<p><em>This is a starting template — review it with a qualified professional before relying on it.</em></p>$html$),
+('disclaimer', 'Disclaimer', 3, $html$<p class="intro">The information on theoutlayer.com is provided for general informational purposes only.</p>
+<h2>Not professional advice</h2>
+<p>Content on this site — including articles and insights — is not professional, legal, financial, or business advice. You should seek qualified advice before acting on anything you read here.</p>
+<h2>No guarantees</h2>
+<p>While we aim for accuracy, we make no warranties about the completeness or reliability of any information on this site. Any reliance you place on it is at your own risk.</p>
+<h2>External links</h2>
+<p>This site may link to third-party websites. We are not responsible for their content or practices.</p>
+<h2>Contact</h2>
+<p>Questions? Email hello@theoutlayer.com.</p>
+<p><em>This is a starting template — review it with a qualified professional before relying on it.</em></p>$html$),
+('cookie-policy', 'Cookie Policy', 4, $html$<p class="intro">This Cookie Policy explains how The Outlayer uses cookies on theoutlayer.com.</p>
+<h2>What are cookies</h2>
+<p>Cookies are small text files stored on your device that help websites function and understand how they are used.</p>
+<h2>How we use cookies</h2>
+<ul><li><strong>Essential cookies</strong> — required for the site to work, including remembering your cookie choice.</li><li><strong>Analytics cookies</strong> — help us understand how visitors use the site. These load only if you accept them.</li></ul>
+<h2>Your choices</h2>
+<p>When you first visit, you can accept or reject non-essential cookies via our banner. You can change your mind at any time by clearing your browser cookies for this site, which shows the banner again.</p>
+<h2>Contact</h2>
+<p>Questions? Email hello@theoutlayer.com.</p>
+<p><em>This is a starting template — review it with a qualified professional before relying on it.</em></p>$html$)
+on conflict (slug) do nothing;

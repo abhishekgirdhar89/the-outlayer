@@ -99,6 +99,18 @@ export type SiteSettings = {
   default_og_image: string;
   twitter_handle: string;
   ga_measurement_id: string;
+  cookie_enabled: boolean;
+  cookie_title: string;
+  cookie_message: string;
+};
+
+export type LegalPage = {
+  slug: string;
+  title: string;
+  content: string;
+  published: boolean;
+  sort_order: number;
+  updated_at: string;
 };
 
 export type NavItem = {

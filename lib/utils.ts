@@ -22,6 +22,14 @@ export function formatMonthYear(iso: string | null): string {
   return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
 
+/** Full date, e.g. "30 June 2026". */
+export function formatFullDate(iso: string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+}
+
 /** Year only, e.g. "2026". */
 export function formatYear(iso: string | null): string {
   if (!iso) return "";

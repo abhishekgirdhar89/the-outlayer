@@ -265,6 +265,41 @@ export async function deleteLeadStatus(formData: FormData) {
   redirect("/admin/leads/statuses");
 }
 
+// ============================ LEGAL PAGES ============================
+export async function saveLegalPage(formData: FormData) {
+  const slug = str(formData, "slug");
+  if (!slug) throw new Error("Missing page slug.");
+  const payload = {
+    slug,
+    title: str(formData, "title"),
+    content: str(formData, "content"),
+    published: bool(formData, "published"),
+    sort_order: int(formData, "sort_order"),
+    updated_at: new Date().toISOString(),
+  };
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("legal_pages").upsert(payload, { onConflict: "slug" });
+  fail(error);
+  revalidatePath("/", "layout");
+  revalidatePath(`/legal/${slug}`);
+  revalidatePath("/admin/legal");
+  redirect("/admin/legal?saved=1");
+}
+
+export async function saveCookieSettings(formData: FormData) {
+  const payload = {
+    id: 1,
+    cookie_enabled: bool(formData, "cookie_enabled"),
+    cookie_message: str(formData, "cookie_message"),
+  };
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("site_settings").upsert(payload, { onConflict: "id" });
+  fail(error);
+  revalidatePath("/", "layout");
+  revalidatePath("/admin/legal");
+  redirect("/admin/legal?saved=1");
+}
+
 // ============================ POST CATEGORIES ============================
 export async function savePostCategory(formData: FormData) {
   const id = str(formData, "id");

@@ -339,6 +339,49 @@ footer.foot{color:rgba(244,241,233,0.5); padding:var(--s7) 0 var(--s8); border-t
 .foot-lk{display:flex; align-items:center; gap:11px;}
 .foot-lk .nm{font-family:var(--display); font-weight:600; font-size:15px; color:var(--bone); letter-spacing:-0.02em;}
 .foot-row .mono{color:rgba(244,241,233,0.4); font-family:var(--mono); font-size:11px; letter-spacing:0.08em;}
+.foot-legal{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 34px; margin-top:var(--s6); padding-top:var(--s6); border-top:1px solid var(--bd);}
+.foot-legal-links{display:flex; flex-wrap:wrap; gap:14px 34px;}
+.foot-legal-lk{font-family:var(--mono); text-transform:uppercase; font-size:12px; letter-spacing:0.11em; color:rgba(244,241,233,0.42); transition:color .18s; background:none; border:0; padding:0; cursor:pointer;}
+.foot-legal-lk:hover{color:var(--bone);}
+
+/* Legal / policy pages */
+.legal-wrap{max-width:760px;}
+.legal-back{display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); text-transform:uppercase; font-size:12px; letter-spacing:0.09em; color:rgba(244,241,233,0.5); margin-bottom:var(--s7); transition:color .18s;}
+.legal-back:hover{color:var(--bone);}
+.legal-back .arr{font-size:15px; transition:transform .18s;}
+.legal-back:hover .arr{transform:translateX(-3px);}
+.legal-h1{font-family:var(--display); font-weight:700; letter-spacing:-0.03em; font-size:clamp(30px,7vw,52px); line-height:1.04; color:var(--bone); margin:14px 0 6px;}
+.legal-meta{font-family:var(--mono); font-size:12px; letter-spacing:0.06em; color:var(--blue-bright); margin-bottom:var(--s6);}
+.legal-wrap .d-prose{margin-top:var(--s5);}
+/* collapse the header to the hamburger on mobile (matches home/insights/post) */
+@media (max-width:820px){
+  .page-legal .top-links{display:none;}
+  .page-legal .nav-toggle{display:flex;}
+  .page-legal .nav-book{display:none;}
+}
+@media (max-width:640px){
+  .page-legal .sec{padding-top:var(--s6);}
+  .legal-back{margin-bottom:var(--s6);}
+  .legal-meta{margin-bottom:var(--s5);}
+}
+@media (max-width:560px){
+  .page-legal .wrap{padding:0 20px;}
+  .foot-legal{flex-direction:column; align-items:flex-start; gap:18px;}
+}
+
+/* Cookie consent — floating card */
+.cookie-bar{position:fixed; left:0; right:0; bottom:0; z-index:60; padding:0 clamp(14px,3vw,34px) clamp(14px,3vw,28px); pointer-events:none;}
+.cookie-inner{pointer-events:auto; max-width:1400px; margin:0 auto; background:var(--lift); border:1px solid var(--bd); border-radius:16px; box-shadow:0 24px 60px rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:space-between; gap:20px 28px; padding:20px clamp(20px,3vw,30px); flex-wrap:wrap;}
+.cookie-copy{max-width:780px; min-width:min(100%,300px);}
+.cookie-copy p{color:rgba(244,241,233,0.68); font-size:14.5px; line-height:1.55;}
+.cookie-copy a{color:var(--blue-bright); border-bottom:1px solid rgba(110,155,255,0.4); padding-bottom:1px; transition:border-color .18s;}
+.cookie-copy a:hover{border-color:var(--blue-bright);}
+.cookie-actions{display:flex; gap:12px; flex-shrink:0;}
+.cookie-actions .btn{padding:11px 24px;}
+@media (max-width:640px){
+  .cookie-inner{flex-direction:column; align-items:stretch;}
+  .cookie-actions{justify-content:flex-end;}
+}
 
 /* mobile sticky CTA bar — hidden on desktop, shown < 560px */
 .mobile-cta-bar{display:none;}
@@ -547,6 +590,7 @@ footer.foot{color:rgba(244,241,233,0.5); padding:var(--s7) 0 var(--s8); border-t
   .page-home .nav-toggle{display:flex;}
   .page-home .about-main{grid-template-columns:1fr;}
   .page-home .about-photo{min-height:300px; aspect-ratio:4/3;}
+  .page-home .about-photo .img-cover{object-position:50% 18%;}
   .page-home .about-stats{grid-template-columns:1fr 1fr;}
   .page-home .about-stats .stat{border-left:0; border-top:1px solid var(--bd);}
   .page-home .about-stats .stat:nth-child(2n){border-left:1px solid var(--bd);}
@@ -622,6 +666,7 @@ footer.foot{color:rgba(244,241,233,0.5); padding:var(--s7) 0 var(--s8); border-t
   .page-home .work-row .body{padding:20px 18px;}
   .page-home .quote p{max-height:6.2em; overflow-y:auto; font-size:16px;}
   .page-home .about-photo{aspect-ratio:auto; height:230px; min-height:0;}
+  .page-home .about-photo .img-cover{object-position:50% 22%;}
   .page-home .about-copy{padding:26px 18px;}
   .page-home .about-copy p{max-width:none;}
   .page-home .about-stats{grid-template-columns:1fr 1fr;}

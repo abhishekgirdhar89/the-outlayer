@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Bricolage_Grotesque, Instrument_Sans, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { getSiteSettings, resolveSiteUrl } from "@/lib/data";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import { CookieConsent } from "@/components/CookieConsent";
 
 const display = Bricolage_Grotesque({
   variable: "--font-display",
@@ -53,10 +55,16 @@ export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const settings = await getSiteSettings();
+  const consent = (await cookies()).get("cookie_consent")?.value;
+  // Analytics loads only after the visitor has accepted cookies (GDPR-friendly).
+  const analyticsAllowed = !settings.cookie_enabled || consent === "accepted";
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
-      <body>{children}</body>
-      <GoogleAnalytics measurementId={settings.ga_measurement_id} />
+      <body>
+        {children}
+        <CookieConsent enabled={settings.cookie_enabled} message={settings.cookie_message} />
+      </body>
+      {analyticsAllowed && <GoogleAnalytics measurementId={settings.ga_measurement_id} />}
     </html>
   );
 }

@@ -1,5 +1,5 @@
 import { getPublicClient } from "./supabase";
-import type { Project, Post, Service, Testimonial, Homepage, Client, SiteSettings, NavItem, PageSeo } from "./types";
+import type { Project, Post, Service, Testimonial, Homepage, Client, SiteSettings, NavItem, PageSeo, LegalPage } from "./types";
 import type { Metadata } from "next";
 
 export const SITE_DEFAULTS: SiteSettings = {
@@ -13,6 +13,10 @@ export const SITE_DEFAULTS: SiteSettings = {
   default_og_image: "",
   twitter_handle: "",
   ga_measurement_id: "",
+  cookie_enabled: true,
+  cookie_title: "We value your privacy",
+  cookie_message:
+    "We use cookies to understand how this site is used and to improve your experience. Read our",
 };
 
 export const NAV_DEFAULTS: NavItem[] = [
@@ -31,6 +35,34 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   } catch (e) {
     console.error("getSiteSettings failed, using defaults:", e);
     return SITE_DEFAULTS;
+  }
+}
+
+export async function getLegalPages(): Promise<LegalPage[]> {
+  try {
+    const supabase = getPublicClient();
+    const { data, error } = await supabase
+      .from("legal_pages")
+      .select("*")
+      .eq("published", true)
+      .order("sort_order", { ascending: true });
+    if (error) throw error;
+    return data ?? [];
+  } catch (e) {
+    console.error("getLegalPages failed:", e);
+    return [];
+  }
+}
+
+export async function getLegalPage(slug: string): Promise<LegalPage | null> {
+  try {
+    const supabase = getPublicClient();
+    const { data, error } = await supabase.from("legal_pages").select("*").eq("slug", slug).maybeSingle();
+    if (error) throw error;
+    return data ?? null;
+  } catch (e) {
+    console.error("getLegalPage failed:", e);
+    return null;
   }
 }
 
