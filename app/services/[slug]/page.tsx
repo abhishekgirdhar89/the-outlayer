@@ -329,22 +329,22 @@ export default async function ServicePageRoute({ params }: Props) {
             <h2 className="b-head reveal r2">{page.testimonials_head}</h2>
             <div className="quotes reveal r2 d2">
               {testimonials.map((t) => (
-                <div className="quote" key={t.id}>
+                <figure className="quote" key={t.id}>
                   <div className="qm" aria-hidden="true">&ldquo;</div>
                   <p>{t.quote}</p>
-                  <div className="by">
+                  <figcaption className="by">
                     {t.image_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img className="av" src={t.image_url} alt="" />
+                      <img className="av" src={t.image_url} alt={t.name} />
                     ) : (
                       <span className="av" />
                     )}
-                    <span>
-                      <span className="nm">{t.name}</span>
-                      <span className="rl">{t.role}</span>
-                    </span>
-                  </div>
-                </div>
+                    <div>
+                      <div className="nm">{t.name}</div>
+                      <div className="rl">{t.role}</div>
+                    </div>
+                  </figcaption>
+                </figure>
               ))}
             </div>
           </div>

@@ -1188,10 +1188,6 @@ footer.foot{color:rgba(244,241,233,0.5); padding:var(--s7) 0 var(--s8); border-t
   /* on mobile drop the "scroll" word — the arrow alone reads clearly and avoids
      overlapping the graphic on short screens */
   .page-services .hero-cue .lbl, .page-services .scrollcue .lbl{display:none;}
-  /* testimonials become a horizontal swipe carousel (shorter page) */
-  .page-services .quotes{display:flex; flex-wrap:nowrap; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:2px 0 16px; margin-top:clamp(30px,3.5vw,46px);}
-  .page-services .quotes::-webkit-scrollbar{display:none;}
-  .page-services .quote{flex:0 0 82%; scroll-snap-align:start; min-height:0;}
   .page-services .cards{grid-template-columns:1fr;}
   .page-services .stage{gap:14px;}
   .page-services .flow-nodes{grid-template-columns:1fr;}
@@ -1204,4 +1200,23 @@ footer.foot{color:rgba(244,241,233,0.5); padding:var(--s7) 0 var(--s8); border-t
   .page-services .lifeitem{grid-template-columns:1fr; gap:8px;}
   .page-services .lifeitem .ph{padding-top:0;}
   .page-services .btn-send{width:100%; justify-content:center;}
+}
+
+/* Testimonials mirror the homepage exactly at every breakpoint (2-up tablet,
+   3-up small tablet, swipe carousel on phones) — no bespoke service-page version. */
+@media (min-width:561px) and (max-width:720px){
+  .page-services .quotes{grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--s4);}
+  .page-services .quote{min-height:0; padding:24px 20px; gap:18px;}
+  .page-services .quote p{font-size:16px;}
+}
+@media (min-width:721px) and (max-width:920px){
+  .page-services .quotes{grid-template-columns:repeat(3,1fr); gap:var(--s4);}
+  .page-services .quote{min-height:0; padding:24px 20px; gap:18px;}
+  .page-services .quote p{font-size:16px;}
+}
+@media (max-width:560px){
+  .page-services .quotes{display:flex; flex-wrap:nowrap; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; margin:var(--s7) 0 0; padding:2px 0 16px; scrollbar-width:none;}
+  .page-services .quotes::-webkit-scrollbar{display:none;}
+  .page-services .quote{flex:0 0 80%; scroll-snap-align:start; min-height:0; padding:22px 18px; gap:16px;}
+  .page-services .quote p{max-height:6.2em; overflow-y:auto; font-size:16px;}
 }

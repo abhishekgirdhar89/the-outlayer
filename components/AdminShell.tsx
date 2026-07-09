@@ -16,6 +16,7 @@ const NAV = [
   { href: "/admin/testimonials", label: "Testimonials", key: "testimonials" },
   { href: "/admin/leads", label: "Enquiries", key: "leads" },
   { href: "/admin/subscribers", label: "Subscribers", key: "subscribers" },
+  { href: "/admin/trash", label: "Trash", key: "trash" },
 ];
 
 export function AdminShell({

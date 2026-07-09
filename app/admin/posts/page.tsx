@@ -12,9 +12,9 @@ export const metadata = { title: "Posts — The Outlayer Admin" };
 export default async function PostsAdmin({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; deleted?: string }>;
+  searchParams: Promise<{ saved?: string; deleted?: string; trashed?: string }>;
 }) {
-  const { saved, deleted } = await searchParams;
+  const { saved, deleted, trashed } = await searchParams;
   let posts;
   try {
     posts = await adminListPosts();
@@ -33,6 +33,9 @@ export default async function PostsAdmin({
       subtitle="Blog posts shown on the Insights page and homepage."
       actions={
         <>
+          <a className="btn btn-ghost-dk" href="/admin/export/posts">
+            Export
+          </a>
           <Link className="btn btn-ghost-dk" href="/admin/posts/categories">
             Categories
           </Link>
@@ -43,6 +46,11 @@ export default async function PostsAdmin({
       }
     >
       <SaveFlash saved={saved} deleted={deleted} />
+      {trashed && (
+        <div className="flash">
+          Moved to Trash. <Link href="/admin/trash" style={{ textDecoration: "underline" }}>Restore it from Trash</Link> anytime.
+        </div>
+      )}
       {posts.length === 0 ? (
         <div className="admin-card admin-empty">No posts yet. Write your first one.</div>
       ) : (
@@ -76,7 +84,11 @@ export default async function PostsAdmin({
                       <Link className="linklike" href={`/admin/posts/${p.id}`}>
                         Edit
                       </Link>
-                      <DeleteButton id={p.id} action={deletePost} />
+                      <DeleteButton
+                        id={p.id}
+                        action={deletePost}
+                        confirmText="Move this post to Trash? You can restore it from Trash later."
+                      />
                     </div>
                   </td>
                 </tr>

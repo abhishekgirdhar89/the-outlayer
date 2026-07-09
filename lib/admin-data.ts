@@ -20,7 +20,11 @@ import type {
 
 export async function adminListProjects(): Promise<Project[]> {
   const s = getAdminClient();
-  const { data, error } = await s.from("projects").select("*").order("sort_order", { ascending: true });
+  const { data, error } = await s
+    .from("projects")
+    .select("*")
+    .is("deleted_at", null)
+    .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   return data ?? [];
 }
@@ -33,8 +37,41 @@ export async function adminGetProject(id: string): Promise<Project | null> {
 
 export async function adminListPosts(): Promise<Post[]> {
   const s = getAdminClient();
-  const { data, error } = await s.from("posts").select("*").order("published_at", { ascending: false });
+  const { data, error } = await s
+    .from("posts")
+    .select("*")
+    .is("deleted_at", null)
+    .order("published_at", { ascending: false });
   if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+/** Trashed (soft-deleted) posts + projects, newest-deleted first. */
+export async function adminListTrashedPosts(): Promise<Post[]> {
+  const s = getAdminClient();
+  const { data, error } = await s
+    .from("posts")
+    .select("*")
+    .not("deleted_at", "is", null)
+    .order("deleted_at", { ascending: false });
+  if (error) {
+    console.error("adminListTrashedPosts failed:", error.message);
+    return [];
+  }
+  return data ?? [];
+}
+
+export async function adminListTrashedProjects(): Promise<Project[]> {
+  const s = getAdminClient();
+  const { data, error } = await s
+    .from("projects")
+    .select("*")
+    .not("deleted_at", "is", null)
+    .order("deleted_at", { ascending: false });
+  if (error) {
+    console.error("adminListTrashedProjects failed:", error.message);
+    return [];
+  }
   return data ?? [];
 }
 

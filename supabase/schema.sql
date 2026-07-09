@@ -806,3 +806,13 @@ update public.service_pages set
   testimonials_tag  = 'In their words',
   testimonials_head = $t$What it's like to work together.$t$
 where slug in ('ai-automation', 'go-to-market', 'growth-marketing');
+
+-- =============================================================
+-- v12 ADDITIONS — soft-delete / Trash for posts & projects.
+-- deleted_at NULL = live; non-NULL = in Trash (restorable). The admin "Delete"
+-- now sets deleted_at; permanent deletion is a separate, deliberate action.
+-- =============================================================
+alter table public.posts    add column if not exists deleted_at timestamptz;
+alter table public.projects add column if not exists deleted_at timestamptz;
+create index if not exists posts_deleted_at_idx    on public.posts (deleted_at);
+create index if not exists projects_deleted_at_idx on public.projects (deleted_at);

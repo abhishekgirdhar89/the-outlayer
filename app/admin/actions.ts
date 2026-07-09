@@ -47,13 +47,55 @@ export async function saveProject(formData: FormData) {
   redirect("/admin/projects?saved=1");
 }
 
+// "Delete" now soft-deletes → Trash (recoverable). Permanent removal is `purgeProject`.
 export async function deleteProject(formData: FormData) {
   const supabase = getAdminClient();
-  const { error } = await supabase.from("projects").delete().eq("id", str(formData, "id"));
+  const { error } = await supabase
+    .from("projects")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", str(formData, "id"));
   fail(error);
   refreshPublic();
   revalidatePath("/admin/projects");
-  redirect("/admin/projects?deleted=1");
+  revalidatePath("/admin/trash");
+  redirect("/admin/projects?trashed=1");
+}
+
+// ============================ TRASH (restore / permanent delete) ============================
+export async function restorePost(formData: FormData) {
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("posts").update({ deleted_at: null }).eq("id", str(formData, "id"));
+  fail(error);
+  refreshPublic();
+  revalidatePath("/admin/posts");
+  revalidatePath("/admin/trash");
+  redirect("/admin/trash?restored=1");
+}
+
+export async function restoreProject(formData: FormData) {
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("projects").update({ deleted_at: null }).eq("id", str(formData, "id"));
+  fail(error);
+  refreshPublic();
+  revalidatePath("/admin/projects");
+  revalidatePath("/admin/trash");
+  redirect("/admin/trash?restored=1");
+}
+
+export async function purgePost(formData: FormData) {
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("posts").delete().eq("id", str(formData, "id"));
+  fail(error);
+  revalidatePath("/admin/trash");
+  redirect("/admin/trash?purged=1");
+}
+
+export async function purgeProject(formData: FormData) {
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("projects").delete().eq("id", str(formData, "id"));
+  fail(error);
+  revalidatePath("/admin/trash");
+  redirect("/admin/trash?purged=1");
 }
 
 // ============================ POSTS ============================
@@ -89,13 +131,18 @@ export async function savePost(formData: FormData) {
   redirect("/admin/posts?saved=1");
 }
 
+// "Delete" now soft-deletes → Trash (recoverable). Permanent removal is `purgePost`.
 export async function deletePost(formData: FormData) {
   const supabase = getAdminClient();
-  const { error } = await supabase.from("posts").delete().eq("id", str(formData, "id"));
+  const { error } = await supabase
+    .from("posts")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", str(formData, "id"));
   fail(error);
   refreshPublic();
   revalidatePath("/admin/posts");
-  redirect("/admin/posts?deleted=1");
+  revalidatePath("/admin/trash");
+  redirect("/admin/posts?trashed=1");
 }
 
 // ============================ SERVICES ============================

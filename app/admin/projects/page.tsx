@@ -11,9 +11,9 @@ export const metadata = { title: "Projects — The Outlayer Admin" };
 export default async function ProjectsAdmin({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; deleted?: string }>;
+  searchParams: Promise<{ saved?: string; deleted?: string; trashed?: string }>;
 }) {
-  const { saved, deleted } = await searchParams;
+  const { saved, deleted, trashed } = await searchParams;
   let projects;
   try {
     projects = await adminListProjects();
@@ -37,6 +37,11 @@ export default async function ProjectsAdmin({
       }
     >
       <SaveFlash saved={saved} deleted={deleted} />
+      {trashed && (
+        <div className="flash">
+          Moved to Trash. <Link href="/admin/trash" style={{ textDecoration: "underline" }}>Restore it from Trash</Link> anytime.
+        </div>
+      )}
       {projects.length === 0 ? (
         <div className="admin-card admin-empty">No projects yet. Create your first one.</div>
       ) : (
@@ -67,7 +72,11 @@ export default async function ProjectsAdmin({
                       <Link className="linklike" href={`/admin/projects/${p.id}`}>
                         Edit
                       </Link>
-                      <DeleteButton id={p.id} action={deleteProject} />
+                      <DeleteButton
+                        id={p.id}
+                        action={deleteProject}
+                        confirmText="Move this project to Trash? You can restore it from Trash later."
+                      />
                     </div>
                   </td>
                 </tr>

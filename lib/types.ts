@@ -9,6 +9,7 @@ export type Project = {
   featured: boolean;
   sort_order: number;
   created_at: string;
+  deleted_at: string | null;
 };
 
 export type Post = {
@@ -29,6 +30,7 @@ export type Post = {
   meta_description: string;
   meta_keywords: string;
   og_image: string;
+  deleted_at: string | null;
 };
 
 export type PageSeo = {

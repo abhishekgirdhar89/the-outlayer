@@ -248,6 +248,7 @@ export async function getFeaturedProjects(limit = 6): Promise<Project[]> {
       .from("projects")
       .select("*")
       .eq("featured", true)
+      .is("deleted_at", null)
       .order("sort_order", { ascending: true })
       .limit(limit);
     if (error) throw error;
@@ -389,6 +390,7 @@ export async function getPublishedPosts(): Promise<Post[]> {
       .from("posts")
       .select("*")
       .eq("published", true)
+      .is("deleted_at", null)
       .order("published_at", { ascending: false });
     if (error) throw error;
     return data ?? [];
@@ -406,6 +408,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
       .select("*")
       .eq("slug", slug)
       .eq("published", true)
+      .is("deleted_at", null)
       .maybeSingle();
     if (error) throw error;
     return data ?? null;
