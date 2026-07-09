@@ -85,5 +85,18 @@ export function buildToc(html: string): { html: string; toc: { id: string; label
     const idAttr = /\bid=/.test(attrs) ? "" : ` id="${id}"`;
     return `<h2${attrs}${idAttr}>${numbered}</h2>`;
   });
-  return { html: patched, toc };
+
+  // In-page anchor links (href="#...") should behave like the left-hand TOC:
+  // stay in the same tab and smooth-scroll to the section. The editor stamps
+  // target="_blank" (rel nofollow) onto every link — correct for external links,
+  // wrong for jump-to-section links — so strip those attrs from hash links only.
+  // Runs at render time, so it also fixes links pasted in from elsewhere.
+  const withAnchors = patched.replace(/<a\b([^>]*)>/gi, (m, attrs: string) => {
+    if (!/href\s*=\s*["']#/i.test(attrs)) return m; // leave external links untouched
+    const cleaned = attrs
+      .replace(/\s+target\s*=\s*["'][^"']*["']/gi, "")
+      .replace(/\s+rel\s*=\s*["'][^"']*["']/gi, "");
+    return `<a${cleaned}>`;
+  });
+  return { html: withAnchors, toc };
 }
