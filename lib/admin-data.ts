@@ -1,5 +1,5 @@
 import { getAdminClient } from "./supabase";
-import { HOMEPAGE_DEFAULTS, SITE_DEFAULTS } from "./data";
+import { HOMEPAGE_DEFAULTS, SITE_DEFAULTS, normalizeServicePage } from "./data";
 import type {
   Project,
   Post,
@@ -158,7 +158,7 @@ export async function adminGetServicePage(slug: string): Promise<ServicePage | n
   const s = getAdminClient();
   const { data, error } = await s.from("service_pages").select("*").eq("slug", slug).maybeSingle();
   if (error) throw new Error(error.message);
-  return (data as ServicePage) ?? null;
+  return data ? normalizeServicePage(data as Record<string, unknown>) : null;
 }
 
 export async function adminListLeads(opts?: { status?: string; sort?: "newest" | "oldest" }): Promise<Lead[]> {

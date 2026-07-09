@@ -204,6 +204,16 @@ export type ServicePage = {
   plain_tag: string;
   plain_head: string;
   plain_body: string;
+  // Per-section visibility. Each hides its section without deleting the content,
+  // so outdated blocks can be turned off and switched back on later.
+  show_plain: boolean;
+  show_flow: boolean;
+  show_how: boolean;
+  show_proof: boolean;
+  show_faq: boolean;
+  show_cta: boolean;
+  show_hub: boolean;
+  show_umbrella: boolean;
   show_testimonials: boolean;
   testimonials_tag: string;
   testimonials_head: string;

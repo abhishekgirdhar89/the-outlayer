@@ -396,6 +396,14 @@ export async function saveServicePage(formData: FormData) {
     plain_tag: str(formData, "plain_tag"),
     plain_head: str(formData, "plain_head"),
     plain_body: str(formData, "plain_body"),
+    show_plain: bool(formData, "show_plain"),
+    show_flow: bool(formData, "show_flow"),
+    show_how: bool(formData, "show_how"),
+    show_proof: bool(formData, "show_proof"),
+    show_faq: bool(formData, "show_faq"),
+    show_cta: bool(formData, "show_cta"),
+    show_hub: bool(formData, "show_hub"),
+    show_umbrella: bool(formData, "show_umbrella"),
     show_testimonials: bool(formData, "show_testimonials"),
     testimonials_tag: str(formData, "testimonials_tag"),
     testimonials_head: str(formData, "testimonials_head"),
@@ -409,7 +417,15 @@ export async function saveServicePage(formData: FormData) {
   };
 
   const supabase = getAdminClient();
-  const { error } = await supabase.from("service_pages").upsert(payload, { onConflict: "slug" });
+  let { error } = await supabase.from("service_pages").upsert(payload, { onConflict: "slug" });
+  // The per-section visibility columns are added by a later schema block. If they
+  // aren't migrated yet, retry without them so every other edit still saves.
+  const visKeys = ["show_plain", "show_flow", "show_how", "show_proof", "show_faq", "show_cta", "show_hub", "show_umbrella"] as const;
+  if (error && (error.code === "PGRST204" || visKeys.some((k) => (error!.message || "").includes(k)))) {
+    const rest: Record<string, unknown> = { ...payload };
+    for (const k of visKeys) delete rest[k];
+    ({ error } = await supabase.from("service_pages").upsert(rest, { onConflict: "slug" }));
+  }
   fail(error);
   revalidatePath("/", "layout");
   revalidatePath(`/services/${slug}`);

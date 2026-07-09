@@ -11,6 +11,17 @@ import type { ServicePage } from "@/lib/types";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Edit service page — The Outlayer Admin" };
 
+/** "Show this section on the live page" toggle, placed at the top of a section card.
+ *  Unticking hides the whole section without deleting any of its content. */
+function SectionToggle({ name, checked, label }: { name: string; checked: boolean; label: string }) {
+  return (
+    <label className="sec-toggle" style={{ display: "flex", alignItems: "center", gap: 10, margin: "-2px 0 14px" }}>
+      <input type="checkbox" name={name} defaultChecked={checked} style={{ width: "auto" }} />
+      <span>{label}</span>
+    </label>
+  );
+}
+
 type Props = {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ saved?: string }>;
@@ -125,8 +136,9 @@ export default async function ServicePageEditor({ params, searchParams }: Props)
         {/* ---- In plain terms (bridge) ---- */}
         <div className="admin-card">
           <h3 className="sec-title">“In plain terms” bridge (optional)</h3>
+          <SectionToggle name="show_plain" checked={p.show_plain} label="Show this section on the live page" />
           <p className="hint" style={{ marginBottom: 12 }}>
-            A full-height plain-language section between the story and the form. Leave the heading blank to hide it.
+            A full-height plain-language section between the story and the form. Untick above to hide it, or leave the heading blank.
           </p>
           <div className="fld-row">
             <div className="fld">
@@ -194,6 +206,7 @@ export default async function ServicePageEditor({ params, searchParams }: Props)
         {/* ---- System flow (AI only / optional) ---- */}
         <div className="admin-card">
           <h3 className="sec-title">System-flow diagram (optional)</h3>
+          <SectionToggle name="show_flow" checked={p.show_flow} label="Show this section on the live page" />
           <p className="hint" style={{ marginBottom: 12 }}>
             The node-by-node diagram used on the AI page. Tick the box to enable it; grey nodes run
             automatically, “lit” nodes are the human decision points.
@@ -204,6 +217,7 @@ export default async function ServicePageEditor({ params, searchParams }: Props)
         {/* ---- How it works ---- */}
         <div className="admin-card">
           <h3 className="sec-title">How it works</h3>
+          <SectionToggle name="show_how" checked={p.show_how} label="Show this section on the live page" />
           <div className="fld-row">
             <div className="fld">
               <label>Section kicker</label>
@@ -230,6 +244,7 @@ export default async function ServicePageEditor({ params, searchParams }: Props)
         {/* ---- Content hub ---- */}
         <div className="admin-card">
           <h3 className="sec-title">Content hub</h3>
+          <SectionToggle name="show_hub" checked={p.show_hub} label="Show this section on the live page" />
           <div className="fld-row">
             <div className="fld">
               <label>Section kicker</label>
@@ -256,6 +271,7 @@ export default async function ServicePageEditor({ params, searchParams }: Props)
         {/* ---- Proof strip ---- */}
         <div className="admin-card">
           <h3 className="sec-title">Proof strip</h3>
+          <SectionToggle name="show_proof" checked={p.show_proof} label="Show this section on the live page" />
           <div className="fld">
             <label>Intro line (optional)</label>
             <textarea name="proof_line" defaultValue={p.proof_line} rows={2} />
@@ -305,6 +321,7 @@ export default async function ServicePageEditor({ params, searchParams }: Props)
         {/* ---- FAQ ---- */}
         <div className="admin-card">
           <h3 className="sec-title">FAQ</h3>
+          <SectionToggle name="show_faq" checked={p.show_faq} label="Show this section on the live page" />
           <div className="fld-row">
             <div className="fld">
               <label>Section kicker</label>
@@ -330,8 +347,9 @@ export default async function ServicePageEditor({ params, searchParams }: Props)
         {/* ---- Closing CTA ---- */}
         <div className="admin-card">
           <h3 className="sec-title">Closing CTA (optional)</h3>
+          <SectionToggle name="show_cta" checked={p.show_cta} label="Show this section on the live page" />
           <p className="hint" style={{ marginBottom: 12 }}>
-            A centered closing block whose button expands a second enquiry form in place. Leave the heading blank to hide it.
+            A centered closing block whose button expands a second enquiry form in place. Untick above to hide it, or leave the heading blank.
           </p>
           <div className="fld-row">
             <div className="fld">
@@ -356,6 +374,7 @@ export default async function ServicePageEditor({ params, searchParams }: Props)
         {/* ---- Umbrella cross-link ---- */}
         <div className="admin-card">
           <h3 className="sec-title">Closing cross-link line (optional)</h3>
+          <SectionToggle name="show_umbrella" checked={p.show_umbrella} label="Show this section on the live page" />
           <p className="hint" style={{ marginBottom: 12 }}>
             A closing sentence that points to your other service pages. Write it as plain text and put
             <code> {"{services}"}</code> where the links should appear — the site turns that into tidy links

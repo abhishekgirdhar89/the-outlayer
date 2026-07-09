@@ -78,7 +78,7 @@ export async function getLegalPage(slug: string): Promise<LegalPage | null> {
 
 /** Coerce a raw service_pages row (JSONB fields arrive already-parsed) into a
  *  fully-populated ServicePage, so the renderer never has to null-check. */
-function normalizeServicePage(row: Record<string, unknown>): ServicePage {
+export function normalizeServicePage(row: Record<string, unknown>): ServicePage {
   const arr = <T,>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
   const s = (v: unknown, d = ""): string => (typeof v === "string" ? v : d);
   return {
@@ -115,6 +115,16 @@ function normalizeServicePage(row: Record<string, unknown>): ServicePage {
     plain_tag: s(row.plain_tag, "In plain terms"),
     plain_head: s(row.plain_head),
     plain_body: s(row.plain_body),
+    // Sections are visible by default; a section is hidden only when its column is
+    // explicitly false. (Absent column → true, so pre-migration nothing disappears.)
+    show_plain: row.show_plain !== false,
+    show_flow: row.show_flow !== false,
+    show_how: row.show_how !== false,
+    show_proof: row.show_proof !== false,
+    show_faq: row.show_faq !== false,
+    show_cta: row.show_cta !== false,
+    show_hub: row.show_hub !== false,
+    show_umbrella: row.show_umbrella !== false,
     show_testimonials: row.show_testimonials === true,
     testimonials_tag: s(row.testimonials_tag, "In their words"),
     testimonials_head: s(row.testimonials_head),

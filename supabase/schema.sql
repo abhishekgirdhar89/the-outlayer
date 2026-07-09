@@ -802,3 +802,19 @@ alter table public.posts    add column if not exists deleted_at timestamptz;
 alter table public.projects add column if not exists deleted_at timestamptz;
 create index if not exists posts_deleted_at_idx    on public.posts (deleted_at);
 create index if not exists projects_deleted_at_idx on public.projects (deleted_at);
+
+-- =============================================================
+-- v13 ADDITIONS — per-section visibility toggles for service pages.
+-- Each flag hides its section on the live page WITHOUT deleting the content,
+-- so outdated blocks can be switched off and back on from the CMS. Default TRUE
+-- so every existing section stays visible until an editor turns it off.
+-- (show_testimonials already exists from v9/v11 and keeps its own default.)
+-- =============================================================
+alter table public.service_pages add column if not exists show_plain    boolean not null default true;
+alter table public.service_pages add column if not exists show_flow     boolean not null default true;
+alter table public.service_pages add column if not exists show_how      boolean not null default true;
+alter table public.service_pages add column if not exists show_proof    boolean not null default true;
+alter table public.service_pages add column if not exists show_faq      boolean not null default true;
+alter table public.service_pages add column if not exists show_cta      boolean not null default true;
+alter table public.service_pages add column if not exists show_hub      boolean not null default true;
+alter table public.service_pages add column if not exists show_umbrella boolean not null default true;

@@ -72,7 +72,6 @@ export default async function ServicePageRoute({ params }: Props) {
     getPageSeo(`services/${slug}`),
   ]);
   const clientNames = clientRows.length ? clientRows.map((c) => c.name) : FALLBACK_CLIENTS;
-  const showTestimonials = page.show_testimonials && testimonials.length > 0;
 
   // Structured data (server-rendered): Service, the practice/founder, breadcrumbs, + FAQPage when present.
   const base = resolveSiteUrl(settings.site_url);
@@ -108,20 +107,34 @@ export default async function ServicePageRoute({ params }: Props) {
     ackHeading: page.form_ack_heading,
     ackBody: page.form_ack_body,
   };
+  // Whether each optional section renders: it must have content AND not be hidden
+  // via its CMS visibility toggle (Admin → Service pages → "Show this section").
+  const show = {
+    plain: page.show_plain && !!page.plain_head,
+    flow: page.show_flow && !!page.flow,
+    how: page.show_how && page.steps.length > 0,
+    proof: page.show_proof && (page.stats.length > 0 || !!page.proof_line),
+    testimonials: page.show_testimonials && testimonials.length > 0,
+    faq: page.show_faq && page.faqs.length > 0,
+    cta: page.show_cta && !!page.cta_head,
+    hub: page.show_hub && page.cards.length > 0,
+    umbrella: page.show_umbrella && !!umbrellaHtml,
+  };
+
   // Movement-two background A/B alternation, computed only across sections that
-  // actually render (so it stays clean on pages missing optional sections).
+  // actually render (so it stays clean on pages missing/hiding optional sections).
   let _li = 0;
   const lift = () => _li++ % 2 === 0;
   const bg = {
     form: lift(),
-    flow: page.flow ? lift() : false,
-    how: page.steps.length ? lift() : false,
-    proof: page.stats.length || page.proof_line ? lift() : false,
-    testimonials: showTestimonials ? lift() : false,
-    faq: page.faqs.length ? lift() : false,
-    cta: page.cta_head ? lift() : false,
-    hub: page.cards.length ? lift() : false,
-    umbrella: umbrellaHtml ? lift() : false,
+    flow: show.flow ? lift() : false,
+    how: show.how ? lift() : false,
+    proof: show.proof ? lift() : false,
+    testimonials: show.testimonials ? lift() : false,
+    faq: show.faq ? lift() : false,
+    cta: show.cta ? lift() : false,
+    hub: show.hub ? lift() : false,
+    umbrella: show.umbrella ? lift() : false,
   };
 
   return (
@@ -216,7 +229,7 @@ export default async function ServicePageRoute({ params }: Props) {
       {/* ===================== MOVEMENT TWO — browsable depth ===================== */}
 
       {/* In plain terms — full-height bridge, holds the graphic in its resolved pose (snap point) */}
-      {page.plain_head && (
+      {show.plain && (
         <section className="beyond bridge" data-story data-pose="5" data-cap="one seat, the whole picture">
           <div className="wrap">
             {page.plain_tag && <p className="b-tag reveal d1">{page.plain_tag}</p>}
@@ -244,7 +257,7 @@ export default async function ServicePageRoute({ params }: Props) {
       </section>
 
       {/* System flow (AI page only) */}
-      {page.flow && (
+      {show.flow && page.flow && (
         <section className={`beyond${bg.flow ? " lift" : ""}`}>
           <div className="wrap">
             <p className="b-tag reveal r2">{page.flow.tag}</p>
@@ -271,7 +284,7 @@ export default async function ServicePageRoute({ params }: Props) {
       )}
 
       {/* How it works */}
-      {page.steps.length > 0 && (
+      {show.how && (
         <section className={`beyond${bg.how ? " lift" : ""}`}>
           <div className="wrap">
             <p className="b-tag reveal r2">{page.how_tag}</p>
@@ -291,7 +304,7 @@ export default async function ServicePageRoute({ params }: Props) {
       )}
 
       {/* Proof strip */}
-      {(page.stats.length > 0 || page.proof_line) && (
+      {show.proof && (
         <section className={`beyond${bg.proof ? " lift" : ""}`}>
           <div className="wrap">
             {page.proof_line && <p className="proof-pl reveal r2">{page.proof_line}</p>}
@@ -322,7 +335,7 @@ export default async function ServicePageRoute({ params }: Props) {
       )}
 
       {/* Testimonials — shared .quote design, CMS-driven */}
-      {showTestimonials && (
+      {show.testimonials && (
         <section className={`beyond${bg.testimonials ? " lift" : ""}`}>
           <div className="wrap">
             <p className="b-tag reveal r2">{page.testimonials_tag}</p>
@@ -352,14 +365,14 @@ export default async function ServicePageRoute({ params }: Props) {
       )}
 
       {/* FAQ */}
-      {page.faqs.length > 0 && (
+      {show.faq && (
         <section className={`beyond${bg.faq ? " lift" : ""}`}>
           <Faq tag={page.faq_tag} head={page.faq_head} faqs={page.faqs} />
         </section>
       )}
 
       {/* Closing CTA — expands a second form in place */}
-      {page.cta_head && (
+      {show.cta && (
         <section className={`beyond${bg.cta ? " lift" : ""}`}>
           <div className="wrap">
             <ClosingCta
@@ -379,7 +392,7 @@ export default async function ServicePageRoute({ params }: Props) {
       )}
 
       {/* Content hub — moved to the end */}
-      {page.cards.length > 0 && (
+      {show.hub && (
         <section className={`beyond${bg.hub ? " lift" : ""}`}>
           <div className="wrap">
             <p className="b-tag reveal r2">{page.hub_tag}</p>
@@ -403,7 +416,7 @@ export default async function ServicePageRoute({ params }: Props) {
       )}
 
       {/* Umbrella cross-link */}
-      {umbrellaHtml && (
+      {show.umbrella && (
         <section className={`beyond umbrella${bg.umbrella ? " lift" : ""}`}>
           <div className="wrap">
             <p className="umb-line reveal r2" dangerouslySetInnerHTML={{ __html: umbrellaHtml }} />
