@@ -15,10 +15,14 @@ import {
   getTestimonials,
   getPublishedPosts,
   getClients,
+  getSiteSettings,
   getPageSeo,
   buildMetadata,
+  resolveSiteUrl,
 } from "@/lib/data";
 import { formatYear, makeCaptcha } from "@/lib/utils";
+import { JsonLd } from "@/components/JsonLd";
+import { orgNodes, graph } from "@/lib/schema";
 
 export const dynamic = "force-dynamic";
 
@@ -39,14 +43,17 @@ export async function generateMetadata() {
 const FALLBACK_CLIENTS = ["Maruti Suzuki", "LPU", "Mu Sigma", "DishTV", "Fab India", "Lingo Sailor"];
 
 export default async function HomePage() {
-  const [home, projects, services, testimonials, posts, clientRows] = await Promise.all([
+  const [home, projects, services, testimonials, posts, clientRows, settings] = await Promise.all([
     getHomepage(),
     getFeaturedProjects(6),
     getServices(),
     getTestimonials(),
     getPublishedPosts(),
     getClients(),
+    getSiteSettings(),
   ]);
+
+  const homeJsonLd = graph(orgNodes(resolveSiteUrl(settings.site_url), settings));
 
   const clientNames = clientRows.length ? clientRows.map((c) => c.name) : FALLBACK_CLIENTS;
   const employers = home.about_employers
@@ -73,6 +80,7 @@ export default async function HomePage() {
 
   return (
     <div className="page-home">
+      <JsonLd data={homeJsonLd} />
       <SiteHeader />
       <Reveals />
 

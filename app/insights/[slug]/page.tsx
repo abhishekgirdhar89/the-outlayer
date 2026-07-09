@@ -7,8 +7,10 @@ import { Media } from "@/components/Media";
 import { MobileCtaBar } from "@/components/MobileCtaBar";
 import { ShareButtons } from "@/components/ShareButtons";
 import { Reveals } from "@/components/Reveals";
-import { getPostBySlug, getPublishedPosts, buildMetadata } from "@/lib/data";
+import { getPostBySlug, getPublishedPosts, getSiteSettings, buildMetadata, resolveSiteUrl } from "@/lib/data";
 import { buildToc, formatMonthYear, injectLeadFigure } from "@/lib/utils";
+import { JsonLd } from "@/components/JsonLd";
+import { orgNodes, articleNode, breadcrumb, graph } from "@/lib/schema";
 import type { Post } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -36,14 +38,26 @@ export default async function PostPage({ params }: Props) {
   const post = await getPostBySlug(slug);
   if (!post) notFound();
 
-  const all = await getPublishedPosts();
+  const [all, settings] = await Promise.all([getPublishedPosts(), getSiteSettings()]);
   const related = pickRelated(all, post.id, post.category, 3);
   const { html, toc } = buildToc(post.content || "");
   // Design #3 places the cover image inside the prose (after the intro), not as a top banner.
   const proseHtml = injectLeadFigure(html, post.cover_image_url);
 
+  const base = resolveSiteUrl(settings.site_url);
+  const jsonLd = graph([
+    articleNode(base, post),
+    ...orgNodes(base, settings),
+    breadcrumb([
+      { name: "Home", url: `${base}/` },
+      { name: "Insights", url: `${base}/insights` },
+      { name: post.title, url: `${base}/insights/${post.slug}` },
+    ]),
+  ]);
+
   return (
     <div className="page-post">
+      <JsonLd data={jsonLd} />
       <SiteHeader active="insights" />
       <Reveals />
 

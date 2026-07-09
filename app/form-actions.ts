@@ -1,6 +1,8 @@
 "use server";
 
 import { getAdminClient } from "@/lib/supabase";
+import { getSiteSettings } from "@/lib/data";
+import { notifyNewLead } from "@/lib/email";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE = /^[+]?[\d\s().-]{7,20}$/;
@@ -50,6 +52,36 @@ export async function submitEnquiry(_prev: FormState, formData: FormData): Promi
     console.error("submitEnquiry failed:", e);
     return { ok: false, error: "Something went wrong saving your enquiry. Please try again." };
   }
+
+  // Fire notification + acknowledgement emails. Never let a mail failure affect
+  // the captured lead — the insert above already succeeded.
+  try {
+    const settings = await getSiteSettings();
+    // {service} in the acknowledgement = the offer name on service forms, but a
+    // neutral phrase on general forms (homepage) so the copy reads naturally.
+    const GENERIC_SOURCES = new Set(["", "Homepage", "Website", "Contact"]);
+    const serviceLabel = GENERIC_SOURCES.has(source)
+      ? settings.ack_service_fallback || "your enquiry"
+      : source;
+    await notifyNewLead(
+      { name, email, phone, message, source },
+      {
+        notifyEmail: settings.lead_notify_email || "",
+        bookingUrl: settings.booking_url || "",
+        publicReplyEmail: settings.contact_email || "hello@theoutlayer.com",
+        serviceLabel,
+        ackCopy: {
+          subject: settings.ack_email_subject,
+          heading: settings.ack_email_heading,
+          body: settings.ack_email_body,
+          signoff: settings.ack_email_signoff,
+        },
+      }
+    );
+  } catch (e) {
+    console.error("submitEnquiry: lead saved but email notify failed:", e);
+  }
+
   return { ok: true, lead: { name, email, message } };
 }
 

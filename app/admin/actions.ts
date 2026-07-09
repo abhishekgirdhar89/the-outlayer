@@ -300,6 +300,76 @@ export async function saveCookieSettings(formData: FormData) {
   redirect("/admin/legal?saved=1");
 }
 
+// ============================ SERVICE PAGES ============================
+export async function saveServicePage(formData: FormData) {
+  const slug = str(formData, "slug");
+  if (!slug) throw new Error("Missing page slug.");
+
+  const json = (k: string): unknown => {
+    const raw = str(formData, k);
+    if (!raw) return k === "flow" ? null : [];
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      throw new Error(`“${k}” isn’t valid JSON — ${e instanceof Error ? e.message : "parse error"}. Nothing was saved.`);
+    }
+  };
+
+  const payload = {
+    slug,
+    title: str(formData, "title"),
+    published: bool(formData, "published"),
+    sort_order: int(formData, "sort_order"),
+    nav_back_label: str(formData, "nav_back_label"),
+    nav_back_href: str(formData, "nav_back_href"),
+    panels: json("panels"),
+    form_tag: str(formData, "form_tag"),
+    form_head: str(formData, "form_head"),
+    form_context_label: str(formData, "form_context_label"),
+    form_context_hint: str(formData, "form_context_hint"),
+    form_context_placeholder: str(formData, "form_context_placeholder"),
+    form_note: str(formData, "form_note"),
+    form_ack_heading: str(formData, "form_ack_heading"),
+    form_ack_body: str(formData, "form_ack_body"),
+    how_tag: str(formData, "how_tag"),
+    how_head: str(formData, "how_head"),
+    steps: json("steps"),
+    hub_tag: str(formData, "hub_tag"),
+    hub_head: str(formData, "hub_head"),
+    cards: json("cards"),
+    proof_line: str(formData, "proof_line"),
+    stats: json("stats"),
+    cred_label: str(formData, "cred_label"),
+    flow: json("flow"),
+    umbrella_html: str(formData, "umbrella_html"),
+    menu_label: str(formData, "menu_label"),
+    menu_blurb: str(formData, "menu_blurb"),
+    is_umbrella: bool(formData, "is_umbrella"),
+    credibility_preline: str(formData, "credibility_preline"),
+    plain_tag: str(formData, "plain_tag"),
+    plain_head: str(formData, "plain_head"),
+    plain_body: str(formData, "plain_body"),
+    show_testimonials: bool(formData, "show_testimonials"),
+    testimonials_tag: str(formData, "testimonials_tag"),
+    testimonials_head: str(formData, "testimonials_head"),
+    faq_tag: str(formData, "faq_tag"),
+    faq_head: str(formData, "faq_head"),
+    faqs: json("faqs"),
+    cta_tag: str(formData, "cta_tag"),
+    cta_head: str(formData, "cta_head"),
+    cta_sub: str(formData, "cta_sub"),
+    cta_button: str(formData, "cta_button"),
+  };
+
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("service_pages").upsert(payload, { onConflict: "slug" });
+  fail(error);
+  revalidatePath("/", "layout");
+  revalidatePath(`/services/${slug}`);
+  revalidatePath("/admin/service-pages");
+  redirect(`/admin/service-pages/${slug}?saved=1`);
+}
+
 // ============================ POST CATEGORIES ============================
 export async function savePostCategory(formData: FormData) {
   const id = str(formData, "id");
@@ -385,6 +455,26 @@ export async function saveSiteSettings(formData: FormData) {
   redirect("/admin/header-footer?saved=1");
 }
 
+// Lead notification recipient + booking link (used by every enquiry form's
+// email + acknowledgement). Provider secrets stay in env; these are the knobs.
+export async function saveLeadSettings(formData: FormData) {
+  const payload = {
+    id: 1,
+    lead_notify_email: str(formData, "lead_notify_email"),
+    booking_url: str(formData, "booking_url"),
+    contact_email: str(formData, "contact_email"),
+    ack_email_subject: str(formData, "ack_email_subject"),
+    ack_email_heading: str(formData, "ack_email_heading"),
+    ack_email_body: str(formData, "ack_email_body"),
+    ack_email_signoff: str(formData, "ack_email_signoff"),
+  };
+  const supabase = getAdminClient();
+  const { error } = await supabase.from("site_settings").upsert(payload, { onConflict: "id" });
+  fail(error);
+  revalidatePath("/", "layout");
+  redirect("/admin/header-footer?saved=1");
+}
+
 export async function saveNavItem(formData: FormData) {
   const id = str(formData, "id");
   const payload = { label: str(formData, "label"), href: str(formData, "href"), sort_order: int(formData, "sort_order") };
@@ -428,6 +518,7 @@ export async function saveSeoDefaults(formData: FormData) {
     id: 1,
     site_url: str(formData, "site_url"),
     twitter_handle: str(formData, "twitter_handle"),
+    linkedin_url: str(formData, "linkedin_url"),
     ga_measurement_id: str(formData, "ga_measurement_id"),
     default_og_image: await resolveImage(formData, "default_og_image", "seo"),
   };

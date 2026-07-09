@@ -77,11 +77,44 @@ Sign in at `/admin/login` with `ADMIN_PASSWORD`. Then:
 
 The contact form captures **name, email, phone, and message** into `leads`, with
 email + phone validation, a honeypot, and a simple math CAPTCHA (no external keys).
-The subscribe band validates the email and de-dupes into `subscribers`. Spam-bot
-upgrades (e.g. Cloudflare Turnstile) can be swapped in later.
+The four **service pages** use the same `leads` table, tagging each enquiry with its
+`source` (e.g. `Fractional CMO`, `AI Systems`) so leads are segmented by offer in the
+**Enquiries** admin. The subscribe band validates the email and de-dupes into
+`subscribers`. Spam-bot upgrades (e.g. Cloudflare Turnstile) can be swapped in later.
 
 Changes are written with the service-role key and the public pages are revalidated
 immediately, so edits appear on the next page load.
+
+### Email notifications & acknowledgements (optional)
+
+Every enquiry can (a) email **you** a notification and (b) email the **sender** a
+branded acknowledgement. This is optional and off until configured — leads are always
+captured regardless. Two transports are supported; set env vars in `.env.local` locally
+and in Project → Settings → Environment Variables on Vercel.
+
+**Option A — Gmail (send from a Gmail address, e.g. `think.outlayer@gmail.com`):**
+
+```
+GMAIL_USER=think.outlayer@gmail.com
+GMAIL_APP_PASSWORD=xxxxxxxxxxxxxxxx      # 16-char Google App Password (NOT your login password)
+```
+
+Steps: on the `think.outlayer@gmail.com` account, turn on **2-Step Verification**, then
+create an **App Password** (Google Account → Security → App passwords) and paste the
+16-character code above. Both the notification and the acknowledgement are then sent
+**from** that Gmail address, so client replies land right back in that inbox.
+
+**Option B — Resend (send from your own verified domain):**
+
+```
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
+EMAIL_FROM=The Outlayer <hello@theoutlayer.com>   # a domain verified in Resend
+```
+
+The recipient of the "new lead" alert (default `think.outlayer@gmail.com`) and an optional
+**booking link** (a "Pick a time" button on the confirmation + in the ack email) are editable
+in **Admin → Header & Footer → Lead notifications & booking**. A mail failure never blocks
+or drops the captured lead.
 
 ### Post content
 

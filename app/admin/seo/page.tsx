@@ -58,9 +58,18 @@ export default async function SeoAdmin({
           />
 
           <div className="fld">
+            <label>LinkedIn profile URL</label>
+            <input name="linkedin_url" defaultValue={settings.linkedin_url} placeholder="https://www.linkedin.com/in/abhishekgirdhar" />
+            <span className="hint">
+              Your LinkedIn profile. Added to the site’s structured data (schema.org <code>sameAs</code>) so search
+              engines &amp; LLMs link this site to you.
+            </span>
+          </div>
+
+          <div className="fld">
             <label>Twitter / X handle</label>
             <input name="twitter_handle" defaultValue={settings.twitter_handle} placeholder="@theoutlayer" />
-            <span className="hint">Optional. Used to attribute share cards on X.</span>
+            <span className="hint">Optional — leave blank if you don’t use X. Used to attribute share cards on X.</span>
           </div>
 
           <div className="fld">
@@ -98,6 +107,14 @@ export default async function SeoAdmin({
                       title: "The Outlayer — Strategy that gets built",
                       context:
                         "The homepage of The Outlayer — the independent strategy, operations, growth, and AI consulting practice of Abhishek Girdhar for founders and operators.",
+                    }
+                  : p.slug.startsWith("services/")
+                  ? {
+                      title: `${p.label.replace(/^Service — /, "")} — The Outlayer`,
+                      context: `A service/offer page of The Outlayer (Abhishek Girdhar's fractional-CMO consulting practice): ${p.label.replace(
+                        /^Service — /,
+                        ""
+                      )}. Strategy that gets built, for founders and operators.`,
                     }
                   : {
                       title: "Insights — The Outlayer",

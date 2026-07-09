@@ -102,6 +102,15 @@ export type SiteSettings = {
   cookie_enabled: boolean;
   cookie_title: string;
   cookie_message: string;
+  lead_notify_email: string;
+  booking_url: string;
+  contact_email: string;
+  ack_email_subject: string;
+  ack_email_heading: string;
+  ack_email_body: string;
+  ack_email_signoff: string;
+  ack_service_fallback: string;
+  linkedin_url: string;
 };
 
 export type LegalPage = {
@@ -127,6 +136,82 @@ export type Testimonial = {
   role: string;
   image_url: string;
   sort_order: number;
+};
+
+// ---------- SERVICE PAGES (scroll-story offer pages) ----------
+export type PanelLine = { text: string; strong?: boolean };
+export type PanelRow = { name: string; desc: string; hot?: boolean };
+export type PanelCols = { built: string[]; notFor: string[] };
+export type StoryPanel = {
+  pose: number;
+  cap?: string;
+  variant?: "head" | "open" | "mid";
+  tag?: string;
+  head?: string;
+  sub?: string;
+  lines?: PanelLine[];
+  rows?: PanelRow[];
+  cols?: PanelCols;
+};
+export type ServiceStep = { phase: string; lead?: string; desc: string };
+export type ServiceCard = { tag: string; heading: string; href: string };
+export type ServiceStat = { value: string; unit?: string; label: string };
+export type ServiceFaq = { q: string; a: string };
+export type ServiceFlowNode = { stat: string; title: string; desc: string; lit?: boolean };
+export type ServiceFlow = {
+  tag: string;
+  head: string;
+  sub: string;
+  capLeft: string;
+  capRight: string;
+  foot: string;
+  nodes: ServiceFlowNode[];
+};
+
+export type ServicePage = {
+  slug: string;
+  title: string;
+  published: boolean;
+  sort_order: number;
+  nav_back_label: string;
+  nav_back_href: string;
+  panels: StoryPanel[];
+  form_tag: string;
+  form_head: string;
+  form_context_label: string;
+  form_context_hint: string;
+  form_context_placeholder: string;
+  form_note: string;
+  form_ack_heading: string;
+  form_ack_body: string;
+  how_tag: string;
+  how_head: string;
+  steps: ServiceStep[];
+  hub_tag: string;
+  hub_head: string;
+  cards: ServiceCard[];
+  proof_line: string;
+  stats: ServiceStat[];
+  cred_label: string;
+  flow: ServiceFlow | null;
+  umbrella_html: string;
+  menu_label: string;
+  menu_blurb: string;
+  is_umbrella: boolean;
+  credibility_preline: string;
+  plain_tag: string;
+  plain_head: string;
+  plain_body: string;
+  show_testimonials: boolean;
+  testimonials_tag: string;
+  testimonials_head: string;
+  faq_tag: string;
+  faq_head: string;
+  faqs: ServiceFaq[];
+  cta_tag: string;
+  cta_head: string;
+  cta_sub: string;
+  cta_button: string;
 };
 
 export type Homepage = {

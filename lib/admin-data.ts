@@ -15,6 +15,7 @@ import type {
   PageSeo,
   PostCategory,
   LegalPage,
+  ServicePage,
 } from "./types";
 
 export async function adminListProjects(): Promise<Project[]> {
@@ -106,6 +107,23 @@ export async function adminGetLegalPage(slug: string): Promise<LegalPage | null>
   return data ?? null;
 }
 
+export async function adminListServicePages(): Promise<ServicePage[]> {
+  const s = getAdminClient();
+  const { data, error } = await s.from("service_pages").select("*").order("sort_order", { ascending: true });
+  if (error) {
+    console.error("adminListServicePages failed:", error.message);
+    return [];
+  }
+  return (data ?? []) as ServicePage[];
+}
+
+export async function adminGetServicePage(slug: string): Promise<ServicePage | null> {
+  const s = getAdminClient();
+  const { data, error } = await s.from("service_pages").select("*").eq("slug", slug).maybeSingle();
+  if (error) throw new Error(error.message);
+  return (data as ServicePage) ?? null;
+}
+
 export async function adminListLeads(opts?: { status?: string; sort?: "newest" | "oldest" }): Promise<Lead[]> {
   const s = getAdminClient();
   let q = s.from("leads").select("*");
@@ -145,6 +163,10 @@ export async function adminListPageSeo(): Promise<(PageSeo & { label: string })[
   const pages: { slug: string; label: string }[] = [
     { slug: "home", label: "Homepage" },
     { slug: "insights", label: "Insights listing" },
+    { slug: "services/fractional-cmo", label: "Service — Fractional CMO" },
+    { slug: "services/ai-automation", label: "Service — AI Systems" },
+    { slug: "services/go-to-market", label: "Service — Brand & Go-to-Market" },
+    { slug: "services/growth-marketing", label: "Service — Growth Marketing" },
   ];
   return pages.map((p) => {
     const row = bySlug.get(p.slug);

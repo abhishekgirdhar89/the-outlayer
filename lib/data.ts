@@ -1,5 +1,5 @@
 import { getPublicClient } from "./supabase";
-import type { Project, Post, Service, Testimonial, Homepage, Client, SiteSettings, NavItem, PageSeo, LegalPage } from "./types";
+import type { Project, Post, Service, Testimonial, Homepage, Client, SiteSettings, NavItem, PageSeo, LegalPage, ServicePage, StoryPanel, ServiceStep, ServiceCard, ServiceStat, ServiceFlow, ServiceFaq } from "./types";
 import type { Metadata } from "next";
 
 export const SITE_DEFAULTS: SiteSettings = {
@@ -17,6 +17,16 @@ export const SITE_DEFAULTS: SiteSettings = {
   cookie_title: "We value your privacy",
   cookie_message:
     "We use cookies to understand how this site is used and to improve your experience. Read our",
+  lead_notify_email: "think.outlayer@gmail.com",
+  booking_url: "",
+  contact_email: "hello@theoutlayer.com",
+  ack_email_subject: "Thanks, {name} — I've got your note",
+  ack_email_heading: "Got it, {name} — it's with me.",
+  ack_email_body:
+    "Thanks for reaching out about {service}. I read every note personally and I'll come back to you with a straight first read, usually within a day.",
+  ack_email_signoff: "Abhishek Girdhar",
+  ack_service_fallback: "your enquiry",
+  linkedin_url: "",
 };
 
 export const NAV_DEFAULTS: NavItem[] = [
@@ -63,6 +73,86 @@ export async function getLegalPage(slug: string): Promise<LegalPage | null> {
   } catch (e) {
     console.error("getLegalPage failed:", e);
     return null;
+  }
+}
+
+/** Coerce a raw service_pages row (JSONB fields arrive already-parsed) into a
+ *  fully-populated ServicePage, so the renderer never has to null-check. */
+function normalizeServicePage(row: Record<string, unknown>): ServicePage {
+  const arr = <T,>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
+  const s = (v: unknown, d = ""): string => (typeof v === "string" ? v : d);
+  return {
+    slug: s(row.slug),
+    title: s(row.title),
+    published: row.published !== false,
+    sort_order: typeof row.sort_order === "number" ? row.sort_order : 0,
+    nav_back_label: s(row.nav_back_label, "All practice areas"),
+    nav_back_href: s(row.nav_back_href, "/#services"),
+    panels: arr<StoryPanel>(row.panels),
+    form_tag: s(row.form_tag, "Start here"),
+    form_head: s(row.form_head),
+    form_context_label: s(row.form_context_label),
+    form_context_hint: s(row.form_context_hint),
+    form_context_placeholder: s(row.form_context_placeholder),
+    form_note: s(row.form_note),
+    form_ack_heading: s(row.form_ack_heading, "Got it — it's with me."),
+    form_ack_body: s(row.form_ack_body),
+    how_tag: s(row.how_tag, "How this actually goes"),
+    how_head: s(row.how_head),
+    steps: arr<ServiceStep>(row.steps),
+    hub_tag: s(row.hub_tag, "Read the long way"),
+    hub_head: s(row.hub_head),
+    cards: arr<ServiceCard>(row.cards),
+    proof_line: s(row.proof_line),
+    stats: arr<ServiceStat>(row.stats),
+    cred_label: s(row.cred_label, "Built alongside"),
+    flow: row.flow && typeof row.flow === "object" ? (row.flow as ServiceFlow) : null,
+    umbrella_html: s(row.umbrella_html),
+    menu_label: s(row.menu_label) || s(row.title),
+    menu_blurb: s(row.menu_blurb),
+    is_umbrella: row.is_umbrella === true,
+    credibility_preline: s(row.credibility_preline),
+    plain_tag: s(row.plain_tag, "In plain terms"),
+    plain_head: s(row.plain_head),
+    plain_body: s(row.plain_body),
+    show_testimonials: row.show_testimonials === true,
+    testimonials_tag: s(row.testimonials_tag, "In their words"),
+    testimonials_head: s(row.testimonials_head),
+    faq_tag: s(row.faq_tag, "Questions people ask"),
+    faq_head: s(row.faq_head),
+    faqs: arr<ServiceFaq>(row.faqs),
+    cta_tag: s(row.cta_tag),
+    cta_head: s(row.cta_head),
+    cta_sub: s(row.cta_sub),
+    cta_button: s(row.cta_button, "Start the conversation"),
+  };
+}
+
+export async function getServicePage(slug: string): Promise<ServicePage | null> {
+  try {
+    const supabase = getPublicClient();
+    const { data, error } = await supabase.from("service_pages").select("*").eq("slug", slug).maybeSingle();
+    if (error) throw error;
+    return data ? normalizeServicePage(data) : null;
+  } catch (e) {
+    console.error("getServicePage failed:", e);
+    return null;
+  }
+}
+
+export async function getServicePages(): Promise<ServicePage[]> {
+  try {
+    const supabase = getPublicClient();
+    const { data, error } = await supabase
+      .from("service_pages")
+      .select("*")
+      .eq("published", true)
+      .order("sort_order", { ascending: true });
+    if (error) throw error;
+    return (data ?? []).map(normalizeServicePage);
+  } catch (e) {
+    console.error("getServicePages failed:", e);
+    return [];
   }
 }
 
