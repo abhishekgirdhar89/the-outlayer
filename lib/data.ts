@@ -410,6 +410,23 @@ export async function getPublishedPosts(): Promise<Post[]> {
   }
 }
 
+/** Managed post-category names, in their configured order. Used to order the
+ *  insights filter chips (which only show categories that actually have posts). */
+export async function getPostCategoryNames(): Promise<string[]> {
+  try {
+    const supabase = getPublicClient();
+    const { data, error } = await supabase
+      .from("post_categories")
+      .select("name")
+      .order("sort_order", { ascending: true });
+    if (error) throw error;
+    return (data ?? []).map((c) => c.name as string);
+  } catch (e) {
+    console.error("getPostCategoryNames failed:", e);
+    return [];
+  }
+}
+
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
     const supabase = getPublicClient();

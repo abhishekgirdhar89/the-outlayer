@@ -4,26 +4,20 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Media } from "./Media";
 import type { Post } from "@/lib/types";
-import { categoryKey, formatMonthYear, formatYear } from "@/lib/utils";
+import { formatMonthYear, formatYear } from "@/lib/utils";
 
-const CHIPS = [
-  { key: "all", label: "All" },
-  { key: "strategy", label: "Strategy" },
-  { key: "ai", label: "AI" },
-  { key: "growth", label: "Growth" },
-  { key: "ops", label: "Ops" },
-];
+export function InsightsList({ posts, categoryOrder = [] }: { posts: Post[]; categoryOrder?: string[] }) {
+  const [filter, setFilter] = useState("All");
 
-const HEADINGS: Record<string, string> = {
-  all: "More reading",
-  strategy: "Strategy",
-  ai: "AI in practice",
-  growth: "Growth",
-  ops: "Operations",
-};
-
-export function InsightsList({ posts }: { posts: Post[] }) {
-  const [filter, setFilter] = useState("all");
+  // Chips are built from the categories that actually have published posts, so
+  // empty categories never appear. Order follows the managed category list;
+  // any tag not in that list is appended after. "All" is always first.
+  const chips = useMemo(() => {
+    const present = new Set(posts.map((p) => p.category).filter(Boolean));
+    const ordered = categoryOrder.filter((name) => present.has(name));
+    const extras = [...present].filter((name) => !categoryOrder.includes(name));
+    return ["All", ...ordered, ...extras];
+  }, [posts, categoryOrder]);
 
   const featured = useMemo(() => posts.find((p) => p.featured) ?? posts[0] ?? null, [posts]);
   const rest = useMemo(
@@ -31,7 +25,7 @@ export function InsightsList({ posts }: { posts: Post[] }) {
     [posts, featured]
   );
 
-  const matches = (p: Post) => filter === "all" || categoryKey(p.category) === filter;
+  const matches = (p: Post) => filter === "All" || p.category === filter;
   const featuredVisible = featured ? matches(featured) : false;
   const visibleRest = rest.filter(matches);
   const shownCount = (featuredVisible ? 1 : 0) + visibleRest.length;
@@ -43,14 +37,14 @@ export function InsightsList({ posts }: { posts: Post[] }) {
         <div className="wrap">
           <span className="fl-label">Filter</span>
           <div className="chips" role="group" aria-label="Filter by topic">
-            {CHIPS.map((c) => (
+            {chips.map((name) => (
               <button
-                key={c.key}
-                className={`chip${filter === c.key ? " active" : ""}`}
-                aria-pressed={filter === c.key}
-                onClick={() => setFilter(c.key)}
+                key={name}
+                className={`chip${filter === name ? " active" : ""}`}
+                aria-pressed={filter === name}
+                onClick={() => setFilter(name)}
               >
-                {c.label}
+                {name}
               </button>
             ))}
           </div>
@@ -93,7 +87,7 @@ export function InsightsList({ posts }: { posts: Post[] }) {
       <section className="sec">
         <div className="wrap">
           <div className="grid-head">
-            <h2>{HEADINGS[filter]}</h2>
+            <h2>{filter === "All" ? "More reading" : filter}</h2>
             <span className="gh-note">Newest first</span>
           </div>
           <div className="writing">

@@ -6,7 +6,7 @@ import { SubscribeForm } from "@/components/SubscribeForm";
 import { InsightsList } from "@/components/InsightsList";
 import { MobileCtaBar } from "@/components/MobileCtaBar";
 import { Reveals } from "@/components/Reveals";
-import { getPublishedPosts, getPageSeo, buildMetadata } from "@/lib/data";
+import { getPublishedPosts, getPostCategoryNames, getPageSeo, buildMetadata } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function InsightsPage() {
-  const posts = await getPublishedPosts();
+  const [posts, categoryOrder] = await Promise.all([getPublishedPosts(), getPostCategoryNames()]);
 
   return (
     <div className="page-insights">
@@ -81,7 +81,7 @@ export default async function InsightsPage() {
         </div>
       </section>
 
-      <InsightsList posts={posts} />
+      <InsightsList posts={posts} categoryOrder={categoryOrder} />
 
       {/* CLOSING CTA */}
       <section className="cta">
