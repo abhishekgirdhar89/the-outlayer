@@ -528,6 +528,9 @@ footer.foot{color:rgba(244,241,233,0.5); padding:var(--s7) 0 var(--s8); border-t
 .rte-btn.is-active{background:rgba(110,155,255,0.16); border-color:var(--bd-h); color:var(--blue-bright);}
 .rte-sep{width:1px; height:20px; background:var(--bd); margin:0 4px;}
 .rte .ProseMirror{padding:22px 24px; min-height:340px; outline:none;}
+.rte-uploading{padding:8px 24px; font-family:var(--mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--blue-bright); border-top:1px solid var(--bd); background:rgba(110,155,255,0.06);}
+.rte .ProseMirror img{max-width:100%; height:auto; border-radius:var(--r-md); border:1px solid var(--bd); margin:1.2em 0;}
+.rte .ProseMirror img.ProseMirror-selectednode{outline:2px solid var(--blue-bright); outline-offset:2px;}
 .rte .ProseMirror:focus{outline:none;}
 .rte-content.d-prose{max-width:none;}
 .rte .ProseMirror p.is-editor-empty:first-child::before{content:"Start writing your article…"; color:rgba(244,241,233,0.32); float:left; height:0; pointer-events:none;}
