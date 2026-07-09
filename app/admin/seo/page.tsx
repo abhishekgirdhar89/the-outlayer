@@ -44,7 +44,7 @@ export default async function SeoAdmin({
         <form action={saveSeoDefaults}>
           <div className="fld">
             <label>Site URL</label>
-            <input name="site_url" defaultValue={settings.site_url} placeholder="https://theoutlayer.com" />
+            <input name="site_url" defaultValue={settings.site_url} placeholder="https://www.theoutlayer.com" />
             <span className="hint">
               Your live domain. Powers canonical links, the sitemap &amp; absolute social-image URLs.
             </span>

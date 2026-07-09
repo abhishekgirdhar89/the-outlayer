@@ -9,7 +9,7 @@ export const SITE_DEFAULTS: SiteSettings = {
   header_cta_href: "/#enquiry",
   footer_tagline: "The non-obvious move. · Strategy that gets built.",
   footer_copyright: "© 2026 · Abhishek Girdhar",
-  site_url: "https://theoutlayer.com",
+  site_url: "https://www.theoutlayer.com",
   default_og_image: "",
   twitter_handle: "",
   ga_measurement_id: "",
@@ -303,7 +303,7 @@ export async function getPageSeo(slug: string): Promise<PageSeo | null> {
 
 /** Normalize the configured site URL into a valid absolute origin (no trailing slash). */
 export function resolveSiteUrl(raw: string | null | undefined): string {
-  const fallback = "https://theoutlayer.com";
+  const fallback = "https://www.theoutlayer.com";
   const value = (raw || "").trim() || fallback;
   try {
     return new URL(value).origin;
