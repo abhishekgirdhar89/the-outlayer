@@ -131,22 +131,8 @@ select * from (values
 ) as v(quote, name, role, sort_order)
 where not exists (select 1 from public.testimonials);
 
-insert into public.projects (title, slug, category, summary, image_url, featured, sort_order) values
-  ('Social-media automation engine','social-media-automation-engine','AI Automation','One content idea → captioned, scheduled, and posted across channels, with reporting that writes itself.','https://picsum.photos/seed/ol-proj-social/1000/1200',true,1),
-  ('Internal workflow transformation','internal-workflow-transformation','Marketing Ops','A tangle of spreadsheets and hand-offs redrawn as one clear pipeline — owners, stages, and SLAs visible to everyone.','https://picsum.photos/seed/ol-proj-workflow/1000/1200',true,2),
-  ('Positioning & GTM sprint','positioning-gtm-sprint','Brand & GTM','A muddled pitch rebuilt into one sharp position and a go-to-market the whole team can run — message, audience, and the first three moves.','https://picsum.photos/seed/ol-proj-gtm/1000/1200',true,3)
-on conflict (slug) do nothing;
-
-insert into public.posts (title, slug, category, excerpt, cover_image_url, content, read_minutes, published, featured, published_at) values
-  ('Strategy that gets built','strategy-that-gets-built','Strategy','What changes when the person who draws the plan is also the one who ships it.','https://picsum.photos/seed/ol-post-strategy/1200/675',
-   '<p class="intro">Most strategy is sound. That''s the part people miss. The thinking holds up, the slides are clear, the room nods — and then the week begins, and the plan stays exactly where it was. On the slide.</p><p>A good strategy is a small set of honest choices: where to play, how to win, what to leave alone. Those choices are worth a lot. But they only start paying once they touch something real — a page, a product, a first move a customer can feel.</p><h2>The deck is not the work</h2><p>Between the decision and the doing sits a quiet handoff. Someone thinks; someone else builds. The thinking gets written down, passed along, interpreted — and a little of it goes missing at every step.</p><div class="pq">A plan you can act on Monday beats a perfect one you frame on a wall.</div><h2>One hand on both</h2><p>The gap closes when the same person holds both ends — the thinking and the building. When the strategist is also the one who ships, the choices stay intact, because there''s no translation step to lose them in.</p><h2>Build it small, build it now</h2><p>The fastest way to know a strategy is true is to ship a small version of it. Not the whole plan — the first real move.</p><h2>What stays after</h2><p>The point of the work isn''t a launch. It''s a system that keeps moving once the engagement ends.</p>',
-   7,true,true,'2026-06-01'),
-  ('The constraint one level down','the-constraint-one-level-down','Strategy','Why the metric you''re optimising is rarely the one setting your ceiling — and how to find the real one.','https://picsum.photos/seed/ol-post-constraint/1200/675','<p class="intro">Every team has a number it watches. Often it''s the wrong one.</p><p>The real constraint usually sits one level down from where everyone is looking.</p>',6,true,false,'2026-05-20'),
-  ('Use AI, don''t sell it','use-ai-dont-sell-it','AI in practice','An operator''s take on where AI compounds inside a business — and where it''s just a demo.','https://picsum.photos/seed/ol-post-ai/1200/675','<p class="intro">The interesting question isn''t whether AI works. It''s where it compounds.</p>',5,true,false,'2026-05-10'),
-  ('The offer is the channel','the-offer-is-the-channel','Growth','Before you look at the channel, look at the offer underneath it.','https://picsum.photos/seed/ol-post-offer/1200/675','<p class="intro">Most acquisition questions are positioning questions wearing a media plan.</p>',6,true,false,'2026-04-28'),
-  ('Make the work legible','make-the-work-legible','Operations','Owners, stages, SLAs — why a process you can read at a glance outperforms a faster one you can''t.','https://picsum.photos/seed/ol-post-legible/1200/675','<p class="intro">A process you can read at a glance beats a faster one nobody understands.</p>',5,true,false,'2026-04-15'),
-  ('Positioning before paid','positioning-before-paid','Growth','The cheapest growth lever is usually the sentence on the page.','https://picsum.photos/seed/ol-post-positioning/1200/675','<p class="intro">Before a dollar goes to spend, the sentence on the page has to earn it.</p>',5,true,false,'2026-03-30')
-on conflict (slug) do nothing;
+-- NOTE: demo posts & projects seeds removed — this is a real, populated site now.
+-- Content lives in the DB (see backups/). Re-running this file will NOT re-add dummy content.
 
 -- =============================================================
 -- v2 ADDITIONS — forms, leads, subscribers, clients, toggles
