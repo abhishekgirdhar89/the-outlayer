@@ -234,7 +234,16 @@ export default async function ServicePageRoute({ params }: Props) {
           <div className="wrap">
             {page.plain_tag && <p className="b-tag reveal d1">{page.plain_tag}</p>}
             <h2 className="b-head reveal d2">{page.plain_head}</h2>
-            {page.plain_body && <p className="plain-body reveal d3">{page.plain_body}</p>}
+            {/* Blank line(s) in the field become separate paragraphs. */}
+            {page.plain_body
+              .split(/\n\s*\n/)
+              .map((para) => para.trim())
+              .filter(Boolean)
+              .map((para, i) => (
+                <p className="plain-body reveal d3" key={i}>
+                  {para}
+                </p>
+              ))}
           </div>
         </section>
       )}
